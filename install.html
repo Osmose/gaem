@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Gaem Installer</title>
+  </head>
+  <body>
+    <a href="#" id="install">Click to Install</a>
+    <script>
+      document.getElementById('install').addEventListener('click', function(e) {
+          e.preventDefault();
+          function installCallback(result) {
+              alert("Install successful.");
+          }
+
+          function errorCallback(result) {
+              alert("Error: " + result.message);
+          }
+
+          navigator.mozApps.install(
+              "http://balwiki.com/pub/apps/gaem/gaem.webapp",
+              installCallback,
+              errorCallback
+          );
+      }, false);
+    </script>
+  </body>
+</html>
