@@ -4,15 +4,44 @@ require.config({
     }
 });
 
-require(['keyboardcontrols', 'js/loader.js', 'js/tiles.js'],
-        function(KeyboardControls) {
-    var WIDTH = 320,
-        HEIGHT = 240,
-        SCALE = 2,
-        running = false,
-        kb = new KeyboardControls(),
-        canvas, ctx,
-        x, y;
+require(['underscore', 'keyboardcontrols', 'entities/player', 'loader',
+         'js/tiles.js'],
+function(_, KeyboardControls, Player, Loader) {
+    function Engine() {
+        this.WIDTH = 160;
+        this.HEIGHT = 144;
+        this.SCALE = 3;
+        this.running = false;
+        this.kb = new KeyboardControls();
+        this.entities = [];
+
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+
+        this.canvas.width = this.WIDTH * this.SCALE;
+        this.canvas.height = this.HEIGHT * this.SCALE;
+        this.ctx.scale(this.SCALE, this.SCALE);
+        this.ctx.mozImageSmoothingEnabled = false;
+
+        document.getElementById('gaem').appendChild(this.canvas);
+    }
+
+    Engine.prototype.tick = function() {
+        _.each(this.entities, function(entity) {
+            entity.tick();
+        });
+    };
+
+    Engine.prototype.render = function() {
+        var self = this;
+
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, this.WIDTH, this.HEIGHT);
+
+        _.each(this.entities, function(entity) {
+            entity.render(self.ctx);
+        });
+    };
 
     var requestFrame = (function() {
         return window.mozRequestAnimationFrame ||
@@ -23,51 +52,36 @@ require(['keyboardcontrols', 'js/loader.js', 'js/tiles.js'],
             };
     })();
 
-    function tick() {
-        if (kb.keys[kb.RIGHT]) x += 2;
-        if (kb.keys[kb.LEFT]) x -= 2;
-        if (kb.keys[kb.DOWN]) y += 2;
-        if (kb.keys[kb.UP]) y -= 2;
-    }
-
-    function render() {
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        ctx.fillStyle = '#FFF';
-        ctx.fillRect(x - 4, y - 4, 10, 10);
-    }
-
     function loop() {
-        tick();
-        render();
-        if (running) {
-            requestFrame(loop, canvas);
+        var engine = window.engine;
+
+        engine.tick();
+        engine.render();
+        if (engine.running) {
+            requestFrame(loop, engine.canvas);
         }
-    }
+    };
 
     function start() {
-        running = true;
-        loop();
-    }
+        var engine = window.engine = new Engine();
+        engine.loader = new Loader();
+        engine.loader.loadTileset('img/entities.png', 'entities', 16, 16);
 
-    function init() {
-        x = 10;
-        y = 10;
-        canvas = document.createElement('canvas');
-        ctx = canvas.getContext('2d');
+        engine.loader.onload(function() {
+            engine.entities.push(new Player(engine, {
+                x: 16,
+                y: 16,
+                tiles: engine.loader.get('entities')
+            }));
 
-        canvas.width = WIDTH * SCALE;
-        canvas.height = HEIGHT * SCALE;
-        ctx.scale(SCALE, SCALE);
-
-        document.getElementById('gaem').appendChild(canvas);
-
-        start();
-    }
+            engine.running = true;
+            loop();
+        });
+    };
 
     if (document.readyState === 'complete') {
-        init();
+        start();
     } else {
-        window.onload = init;
+        window.onload = start;
     }
 });
