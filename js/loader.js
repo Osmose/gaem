@@ -18,13 +18,16 @@ define(['underscore'], function(_) {
             img.onload = this._done_loading(id);
             img.src = url;
         },
-        loadTileset: function(url, id, tileWidth, tileHeight) {
+        loadTileset: function(url, id, tileWidth, tileHeight, xGap, yGap) {
             var img = new Image(),
                 self = this;
+            yGap = yGap || 0;
+            xGap = xGap || 0;
+
             this.resources[id] = {res: null, loaded: false};
             img.onload = function() {
                 self.resources[id].res = new Tileset(img, tileWidth,
-                                                     tileHeight);
+                                                     tileHeight, xGap, yGap);
                 self._done_loading(id)();
             };
             img.src = url;
@@ -58,13 +61,16 @@ define(['underscore'], function(_) {
     });
 
     // Handles grabbing specific tiles from a tileset
-    function Tileset(img, tileWidth, tileHeight) {
-        this.img = img;
-        this.tw = tileWidth;
-        this.th = tileHeight;
-
-        this.img_tw = Math.floor(img.width / tileWidth);
-        this.img_th = Math.floor(img.height / tileHeight);
+    function Tileset(img, tileWidth, tileHeight, xGap, yGap) {
+        _.extend(this, {
+            img: img,
+            tw: tileWidth,
+            th: tileHeight,
+            xGap: xGap,
+            yGap: yGap,
+            img_tw: Math.floor(img.width / (tileWidth + xGap)),
+            img_th: Math.floor(img.height / (tileHeight + yGap))
+        });
     }
 
     _.extend(Tileset.prototype, {
@@ -72,8 +78,10 @@ define(['underscore'], function(_) {
             var ty = Math.floor(tilenum / this.img_tw),
                 tx = tilenum % this.img_tw;
 
-            ctx.drawImage(this.img, tx * this.tw, ty * this.th, this.tw,
-                          this.th, x, y, this.tw, this.th);
+            ctx.drawImage(this.img,
+                          (tx * this.tw) + (tx * this.xGap),
+                          (ty * this.th) + (ty * this.yGap),
+                          this.tw, this.th, x, y, this.tw, this.th);
         }
     });
 

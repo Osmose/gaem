@@ -5,8 +5,8 @@ require.config({
 });
 
 require(['underscore', 'keyboardcontrols', 'entities/player', 'loader',
-         'js/tiles.js'],
-function(_, KeyboardControls, Player, Loader) {
+         'tilemap'],
+function(_, KeyboardControls, Player, Loader, Tilemap) {
     function Engine() {
         this.WIDTH = 160;
         this.HEIGHT = 144;
@@ -14,6 +14,7 @@ function(_, KeyboardControls, Player, Loader) {
         this.running = false;
         this.kb = new KeyboardControls();
         this.entities = [];
+        this.tilemap = null;
 
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -37,6 +38,10 @@ function(_, KeyboardControls, Player, Loader) {
 
         this.ctx.fillStyle = '#000';
         this.ctx.fillRect(0, 0, this.WIDTH, this.HEIGHT);
+
+        if (this.tilemap !== null) {
+            this.tilemap.draw(this.ctx, 0, 0);
+        }
 
         _.each(this.entities, function(entity) {
             entity.render(self.ctx);
@@ -66,6 +71,8 @@ function(_, KeyboardControls, Player, Loader) {
         var engine = window.engine = new Engine();
         engine.loader = new Loader();
         engine.loader.loadTileset('img/entities.png', 'entities', 16, 16);
+        engine.loader.loadTileset('img/la_overtile.png', 'overworld',
+                                  16, 16, 1, 1);
 
         engine.loader.onload(function() {
             engine.entities.push(new Player(engine, {
@@ -73,6 +80,23 @@ function(_, KeyboardControls, Player, Loader) {
                 y: 16,
                 tiles: engine.loader.get('entities')
             }));
+            engine.tilemap = new Tilemap(engine.loader.get('overworld'), {
+                tileWidth: 16, tileHeight: 16,
+                width: 10, height: 8,
+                map: [
+                    [120, 121, 121, 121, 121, 121, 121, 121, 121, 122],
+                    [144, 145, 145, 145, 145, 145, 145, 145, 145, 146],
+                    [144, 145, 145, 145, 145, 145, 145, 145, 145, 146],
+                    [144, 145, 145, 145, 145, 145, 145, 145, 145, 146],
+                    [144, 145, 145, 145, 145, 145, 145, 145, 145, 146],
+                    [144, 145, 145, 145, 145, 145, 145, 145, 145, 146],
+                    [144, 145, 145, 145, 145, 145, 376, 145, 145, 146],
+                    [168, 169, 169, 169, 169, 169, 169, 169, 169, 170]
+                ],
+                anim: {
+                    376: [376, 15, 377, 15, 378, 15, 379, 15]
+                }
+            });
 
             engine.running = true;
             loop();

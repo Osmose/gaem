@@ -31,7 +31,7 @@ define(['underscore'], function(_) {
                 if (this.anim_delay <= 0) {
                     var anim = this.anim[this.state];
                     this.anim_frame += 2;
-                    if (this.anim_frame > (anim.length / 2)) {
+                    if (this.anim_frame >= anim.length) {
                         this.anim_frame = 0;
                     }
 
@@ -51,14 +51,21 @@ define(['underscore'], function(_) {
             var kb = this.eng.kb,
                 vx = 0, vy = 0;
 
-            if (kb.keys[kb.RIGHT]) {vx += 1; this.setState(this.RIGHT);}
-            if (kb.keys[kb.LEFT]) {vx -= 1; this.setState(this.LEFT);}
-            if (kb.keys[kb.DOWN]) {vy += 1; this.setState(this.DOWN);}
-            if (kb.keys[kb.UP]) {vy -= 1; this.setState(this.UP);}
+            var newState = null;
+            if (kb.keys[kb.RIGHT]) {vx += 1; newState = this.RIGHT;}
+            if (kb.keys[kb.LEFT]) {vx -= 1; newState = this.LEFT;}
+            if (kb.keys[kb.DOWN]) {vy += 1; newState = this.DOWN;}
+            if (kb.keys[kb.UP]) {vy -= 1; newState = this.UP;}
 
             this.x += vx;
             this.y += vy;
             this.moving = (vx !== 0 || vy !== 0);
+            if (newState !== null) {
+                this.setState(newState);
+            } else if (!this.moving) {
+                // Prevents odd single-pixel-no-animation movement
+                this.anim_delay = 0;
+            }
         },
         setState: function(state) {
             if (state !== this.state) {
