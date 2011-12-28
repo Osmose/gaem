@@ -1,7 +1,8 @@
-define(['underscore'], function(_) {
-    function Loader() {
+define(['underscore', 'jquery'], function(_, $) {
+    function Loader(path) {
         this.resources = {};
         this.loadingCallback = false;
+        this.path = path || '';
     }
 
     _.extend(Loader.prototype, {
@@ -16,7 +17,7 @@ define(['underscore'], function(_) {
             var img = new Image();
             this.resources[id] = {res: img, loaded: false};
             img.onload = this._done_loading(id);
-            img.src = url;
+            img.src = this._path(url);
         },
         loadTileset: function(url, id, tileWidth, tileHeight, xGap, yGap) {
             var img = new Image(),
@@ -30,7 +31,19 @@ define(['underscore'], function(_) {
                                                      tileHeight, xGap, yGap);
                 self._done_loading(id)();
             };
-            img.src = url;
+            img.src = this._path(url);
+        },
+        loadJSON: function(url, id) {
+            var self = this;
+
+            this.resources[id] = {res: null, loaded: false};
+            $.getJSON(this._path(url), function(data) {
+                self.resources[id].res = data;
+                self._done_loading(id)();
+            });
+        },
+        _path: function(url) {
+            return this.path + url;
         },
         _done_loading: function(id) {
             var self = this;
