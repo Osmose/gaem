@@ -1,20 +1,24 @@
 define(['underscore'], function(_) {
-    function Tilemap(tiles, tiledata) {
+    function Tilemap(engine, map) {
         var self = this;
 
-        this.tiles = tiles;
-        this.tiledata = tiledata;
-        this.anim = {};
+        this.engine = engine;
+        _.extend(this, map);
+        this.tileset = engine.loader.get(this.tileset);
 
-        _.each(tiledata.anim, function(anim_data, i) {
-            self.anim[i] = {
-                tile: anim_data[0],
-                frame: 0,
-                delay: anim_data[1],
-                len: anim_data.length,
-                data: anim_data
-            };
-        });
+        // Set up animation data
+        this.anim = {};
+        if (this.tileset.anim !== undefined) {
+            _.each(this.tileset.anim, function(anim_data, i) {
+                self.anim[i] = {
+                    tile: anim_data[0],
+                    frame: 0,
+                    delay: anim_data[1],
+                    len: anim_data.length,
+                    data: anim_data
+                };
+            });
+        }
     }
 
     _.extend(Tilemap.prototype, {
@@ -32,25 +36,23 @@ define(['underscore'], function(_) {
                 }
             });
         },
-        draw: function(ctx, x, y) {
-            this.animate();
-
-            var data = this.tiledata,
-                map = data.map,
-                tile;
-            for (var ty = 0; ty < data.height; ty++) {
-                for (var tx = 0; tx < data.width; tx++) {
-                    tile = this.getTile(map[ty][tx]);
-                    this.tiles.drawTile(ctx, tile, x + (tx * data.tileWidth),
-                                        y + (ty * data.tileHeight));
-                }
-            }
-        },
         getTile: function(tilenum) {
             if (this.anim.hasOwnProperty(tilenum)) {
                 return this.anim[tilenum].tile;
             } else {
                 return tilenum;
+            }
+        },
+        draw: function(ctx, x, y) {
+            this.animate();
+
+            for (var ty = 0; ty < this.height; ty++) {
+                for (var tx = 0; tx < this.width; tx++) {
+                    this.tileset.drawTile(ctx,
+                                          this.getTile(this.map[ty][tx]),
+                                          x + (tx * this.tileset.tw),
+                                          y + (ty * this.tileset.th));
+                }
             }
         }
     });

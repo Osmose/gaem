@@ -71,10 +71,7 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap) {
     function start() {
         var engine = window.engine = new Engine();
         engine.loader = new Loader('assets/');
-        engine.loader.loadTileset('img/entities.png', 'entities', 16, 16);
-        engine.loader.loadTileset('img/la_overtile.png', 'overworld',
-                                  16, 16, 1, 1);
-        engine.loader.loadJSON('map.json', 'map');
+        engine.loader.loadResources('resources.json');
 
         engine.loader.onload(function() {
             engine.entities.push(new Player(engine, {
@@ -82,8 +79,7 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap) {
                 y: 16,
                 tiles: engine.loader.get('entities')
             }));
-            engine.tilemap = new Tilemap(engine.loader.get('overworld'),
-                                         engine.loader.get('map'));
+            engine.tilemap = new Tilemap(engine, engine.loader.get('map')['base']);
 
             engine.running = true;
             loop();

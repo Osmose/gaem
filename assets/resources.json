@@ -1,0 +1,25 @@
+{
+    "tilesets": {
+        "overworld": {
+            "path": "img/la_overtile.png",
+            "tileWidth": 16,
+            "tileHeight": 16,
+            "xGap": 1,
+            "yGap": 1,
+            "anim": {
+                "376": [376, 15, 377, 15, 378, 15, 379, 15]
+            }
+        },
+        "entities": {
+            "path": "img/entities.png",
+            "tileWidth": 16,
+            "tileHeight": 16,
+            "xGap": 0,
+            "yGap": 0,
+            "anim": []
+        }
+    },
+    "json": {
+        "map": "map.json"
+    }
+}
