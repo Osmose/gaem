@@ -37,7 +37,7 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap) {
     Engine.prototype.render = function() {
         var self = this;
 
-        this.ctx.fillStyle = '#000';
+        this.ctx.fillStyle = '#FFFF8B';
         this.ctx.fillRect(0, 0, this.WIDTH, this.HEIGHT);
 
         if (this.tilemap !== null) {
@@ -75,8 +75,8 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap) {
 
         engine.loader.onload(function() {
             engine.entities.push(new Player(engine, {
-                x: 16,
-                y: 16,
+                x: 24,
+                y: 24,
                 tiles: engine.loader.get('entities')
             }));
             engine.tilemap = new Tilemap(engine.loader,
