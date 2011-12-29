@@ -1,10 +1,9 @@
 define(['underscore'], function(_) {
-    function Tilemap(engine, map) {
+    function Tilemap(loader, map) {
         var self = this;
 
-        this.engine = engine;
         _.extend(this, map);
-        this.tileset = engine.loader.get(this.tileset);
+        this.tileset = loader.get(this.tileset);
 
         // Set up animation data
         this.anim = {};

@@ -9,14 +9,17 @@
       <div id="map-container">
         <canvas id="map"></canvas>
       </div>
-      <div id="palette">
-        <ul id="available-palettes"></ul>
-        <ul id="palette-tiles"></ul>
+      <div id="palette-container">
+        <div>
+          <span>Current Tile:</span>
+          <canvas id="curtile"></canvas>
+        </div>
+        <canvas id="palette"></canvas>
       </div>
       <div id="json-container">
         <textarea id="json"></textarea>
       </div>
     </article>
-    <script data-main="editor.js" src="../js/require.js"></script>
+    <script data-main="editor.js" src="../../js/require.js"></script>
   </body>
 </html>

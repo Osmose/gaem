@@ -5,8 +5,8 @@ require.config({
     }
 });
 
-require(['underscore', 'jquery', 'keyboardcontrols', 'entities/player', 'loader',
-         'tilemap'],
+require(['underscore', 'jquery', 'keyboardcontrols', 'entities/player',
+         'loader', 'tilemap'],
 function(_, $, KeyboardControls, Player, Loader, Tilemap) {
     function Engine() {
         this.WIDTH = 160;
@@ -79,7 +79,8 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap) {
                 y: 16,
                 tiles: engine.loader.get('entities')
             }));
-            engine.tilemap = new Tilemap(engine, engine.loader.get('map')['base']);
+            engine.tilemap = new Tilemap(engine.loader,
+                                         engine.loader.get('map')['base']);
 
             engine.running = true;
             loop();
