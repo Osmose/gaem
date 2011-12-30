@@ -1,13 +1,14 @@
 require.config({
-    baseUrl: "../../js/",
     paths: {
-        underscore: 'lib/underscore',
-        jquery: 'lib/jquery'
+        underscore: '../lib/underscore',
+        jquery: '../lib/jquery',
+        loader: '../gaem/loader',
+        tilemap: '../gaem/tilemap'
     }
 });
 
 require(['jquery', 'loader', 'tilemap'], function($, Loader, Tilemap) {
-    var loader = new Loader('../../assets/'),
+    var loader = new Loader('assets/'),
         $json = $('#json'),
         $palette = $('#palette'),
         $canvas = $('#map'),

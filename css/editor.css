@@ -1,0 +1,35 @@
+body {
+    padding-top: 60px;
+}
+
+#map-container {
+    margin-bottom: 20px;
+}
+
+#map {
+    display: block;
+    margin: auto;
+}
+
+#sidebar {
+    border-left: 1px solid #DDD;
+    margin-left: 0px;
+    padding-left: 19px;
+}
+
+#current-tile {
+    background: #DDF4FB;
+    border: 1px solid #C6EDF9;
+    padding: 5px;
+    text-align: center;
+}
+
+#palette {
+    display: block;
+    margin: auto;
+}
+
+#json {
+    height: 200px;
+    width: 100%;
+}

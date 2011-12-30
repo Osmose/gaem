@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html LANG="en-US">
+  <head>
+    <title>Gaem Editor</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/editor.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="#">Gaem Editor</a>
+        </div>
+      </div>
+    </header>
+    <article class="container">
+      <div class="row">
+        <nav class="span16">
+          <ul class="pills">
+            <li class="active"><a href="#">Tiles</a></li>
+            <li><a href="#">Terrain</a></li>
+            <li><a href="#">Entities</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="row">
+        <section id="map-container" class="span9">
+          <canvas id="map"></canvas>
+        </section>
+        <section id="sidebar" class="span7">
+          <div id="current-tile">
+            <h3>Current Tile:</h3>
+            <canvas id="curtile"></canvas>
+          </div>
+          <h3>Palette</h3>
+          <canvas id="palette"></canvas>
+        </section>
+      </div>
+      <div class="row">
+        <section id="json-container" class="span16">
+          <h3>JSON Code</h3>
+          <textarea id="json"></textarea>
+        </section>
+      </div>
+    </article>
+    <script data-main="js/editor/editor.js" src="js/require.js"></script>
+  </body>
+</html>
