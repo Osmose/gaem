@@ -1,6 +1,6 @@
 define(['underscore'], function(_) {
     function Player(engine, options) {
-        this.eng = engine;
+        this.engine = engine;
 
         _.defaults(options, {
             x: 0,
@@ -18,6 +18,8 @@ define(['underscore'], function(_) {
 
         this.moving = false;
         this.setState(this.DOWN);
+
+        this.bounding_box = {left: 1, top: 1, right: 15, bottom: 15};
     }
 
     _.extend(Player.prototype, {
@@ -43,12 +45,11 @@ define(['underscore'], function(_) {
         render: function(ctx) {
             this.animate();
             if (this.tiles !== null) {
-                this.tiles.drawTile(ctx, this.anim_tile, this.x - 8,
-                                    this.y - 8);
+                this.tiles.drawTile(ctx, this.anim_tile, this.x, this.y);
             }
         },
         tick: function() {
-            var kb = this.eng.kb,
+            var kb = this.engine.kb,
                 vx = 0, vy = 0;
 
             var newState = null;
@@ -56,6 +57,11 @@ define(['underscore'], function(_) {
             if (kb.keys[kb.LEFT]) {vx -= 1; newState = this.LEFT;}
             if (kb.keys[kb.DOWN]) {vy += 1; newState = this.DOWN;}
             if (kb.keys[kb.UP]) {vy -= 1; newState = this.UP;}
+
+            var xCollides = this.collides(vx, 0),
+                yCollides = this.collides(0, vy);
+            if (xCollides.length !== 0) vx = 0;
+            if (yCollides.length !== 0) vy = 0;
 
             this.x += vx;
             this.y += vy;
@@ -66,6 +72,18 @@ define(['underscore'], function(_) {
                 // Prevents odd single-pixel-no-animation movement
                 this.anim_delay = 0;
             }
+        },
+        collides: function(vx, vy) {
+            var box = this.getBoundingBox(this.x + vx, this.y + vy);
+            return this.engine.collides(box);
+        },
+        getBoundingBox: function(x, y) {
+            return {
+                left: x + this.bounding_box.left,
+                right: x + this.bounding_box.right,
+                top: y + this.bounding_box.top,
+                bottom: y + this.bounding_box.bottom
+            };
         },
         setState: function(state) {
             if (state !== this.state) {

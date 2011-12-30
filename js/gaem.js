@@ -6,8 +6,8 @@ require.config({
 });
 
 require(['underscore', 'jquery', 'keyboardcontrols', 'entities/player',
-         'loader', 'tilemap'],
-function(_, $, KeyboardControls, Player, Loader, Tilemap) {
+         'loader', 'tilemap', 'util'],
+function(_, $, KeyboardControls, Player, Loader, Tilemap, util) {
     function Engine() {
         this.WIDTH = 160;
         this.HEIGHT = 144;
@@ -49,6 +49,20 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap) {
         });
     };
 
+    Engine.prototype.collides = function(box, border_collision) {
+        var collides = [];
+        if (border_collision === undefined) border_collision = true;
+
+        if (border_collision) {
+            if (!util.box_contains(box, {left: 0, top: 0, right: this.WIDTH,
+                                         bottom: this.HEIGHT - 16})) {
+                collides.push('bounds');
+            }
+        }
+
+        return collides;
+    };
+
     var requestFrame = (function() {
         return window.mozRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
@@ -75,8 +89,8 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap) {
 
         engine.loader.onload(function() {
             engine.entities.push(new Player(engine, {
-                x: 24,
-                y: 24,
+                x: 16,
+                y: 16,
                 tiles: engine.loader.get('entities')
             }));
             engine.tilemap = new Tilemap(engine.loader,
