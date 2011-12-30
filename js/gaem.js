@@ -60,6 +60,10 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap, util) {
             }
         }
 
+        if (this.tilemap.collides(box)) {
+            collides.push('tiles');
+        }
+
         return collides;
     };
 

@@ -53,6 +53,29 @@ define(['underscore'], function(_) {
                                           y + (ty * this.tileset.th));
                 }
             }
+        },
+        collides: function(box) {
+            var bounds = this.getContainingTiles(box);
+            for (var ty = bounds.top; ty <= bounds.bottom; ty++) {
+                for (var tx = bounds.left; tx <= bounds.right; tx++) {
+                    if (this.collision_map[ty][tx] == 1) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        },
+        getContainingTiles: function(box) {
+            // Bound units are tiles, inclusive
+            return {
+                left: Math.max(0, Math.floor(box.left / this.tileset.tw)),
+                top: Math.max(0, Math.floor(box.top / this.tileset.th)),
+                right: Math.min(this.width - 1,
+                                Math.floor(box.right / this.tileset.tw)),
+                bottom: Math.min(this.height - 1,
+                                 Math.floor(box.bottom / this.tileset.th))
+            };
         }
     });
 
