@@ -29,6 +29,11 @@ body {
     margin: auto;
 }
 
+#terrain-list img {
+    vertical-align: middle;
+    margin: 0 5px;
+}
+
 #json {
     height: 200px;
     width: 100%;

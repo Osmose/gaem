@@ -1,12 +1,15 @@
 define(['underscore', 'loader'], function(_, loader) {
     function Tilemap(map_data) {
         var self = this;
-
-        this.data = map_data;
-        this.tileset = loader.get(map_data.tileset);
+        _.extend(this, {
+            data: map_data,
+            width: map_data.width,
+            height: map_data.height,
+            tileset: loader.get(map_data.tileset),
+            anim: {}
+        });
 
         // Set up animation data
-        this.anim = {};
         if (this.tileset.anim !== undefined) {
             _.each(this.tileset.anim, function(anim_data, i) {
                 self.anim[i] = {
@@ -45,6 +48,15 @@ define(['underscore', 'loader'], function(_, loader) {
         setTile: function(tx, ty, tilenum) {
             this.data.map[ty][tx] = tilenum;
         },
+
+        // IDEA: "Animated" terrain?
+        getTerrain: function(tx, ty) {
+            return this.data.terrain[ty][tx];
+        },
+        setTerrain: function(tx, ty, terrain) {
+            this.data.terrain[ty][tx] = terrain;
+        },
+
         draw: function(ctx, x, y) {
             this.animate();
 
@@ -61,7 +73,7 @@ define(['underscore', 'loader'], function(_, loader) {
             var bounds = this.getContainingTiles(box);
             for (var ty = bounds.top; ty <= bounds.bottom; ty++) {
                 for (var tx = bounds.left; tx <= bounds.right; tx++) {
-                    if (this.data.collision_map[ty][tx] == 1) {
+                    if (this.data.terrain[ty][tx] == 1) {
                         return true;
                     }
                 }

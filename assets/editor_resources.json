@@ -1,0 +1,12 @@
+{
+    "tilesets": {
+        "terrain": {
+            "path": "img/terrain.png",
+            "tileWidth": 16,
+            "tileHeight": 16,
+            "xGap": 0,
+            "yGap": 0,
+            "anim": {}
+        }
+    }
+}

@@ -16,10 +16,9 @@
     <article class="container">
       <div class="row">
         <nav class="span16">
-          <ul class="pills">
-            <li class="active"><a href="#">Tiles</a></li>
-            <li><a href="#">Terrain</a></li>
-            <li><a href="#">Entities</a></li>
+          <ul id="modes" class="pills">
+            <li class="active"><a href="#" data-mode="tiles">Tiles</a></li>
+            <li><a href="#" data-mode="terrain">Terrain</a></li>
           </ul>
         </nav>
       </div>
@@ -37,6 +36,7 @@
       </div>
     </article>
     <script data-main="js/editor/editor.js" src="js/require.js"></script>
+
     <script id="tiles_mode" type="text/html">
       <div id="current-tile-container">
         <h3>Current Tile:</h3>
@@ -44,6 +44,20 @@
       </div>
       <h3>Palette</h3>
       <canvas id="palette"></canvas>
+    </script>
+
+    <script id="terrain_mode" type="text/html">
+      <h3>Terrain</h3>
+      <ul id="terrain-list" class="inputs-list">
+        {{#terrain}}
+          <li>
+            <label>
+              <input type="radio" name="terrain" value="{{tile}}">
+              <span>{{{img}}} {{name}}</span>
+            </label>
+          </li>
+        {{/terrain}}
+      </ul>
     </script>
   </body>
 </html>

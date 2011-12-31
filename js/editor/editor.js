@@ -10,8 +10,8 @@ require.config({
 });
 
 require(['underscore', 'jquery','loader', 'tilemap', 'tilemap_collection',
-         'tiles_mode'],
-function(_, $, loader, Tilemap, TilemapCollection, TilesMode) {
+         'tiles_mode', 'terrain_mode'],
+function(_, $, loader, Tilemap, TilemapCollection, TilesMode, TerrainMode) {
     function Editor(canvas, map_data) {
         var self = this;
 
@@ -23,18 +23,28 @@ function(_, $, loader, Tilemap, TilemapCollection, TilesMode) {
             ctx: canvas.getContext('2d'),
             tilemap_collection: new TilemapCollection(map_data),
             tilemap: null,
+            mode: null,
             $sidebar: $('#sidebar'),
             $json: $('#json')
         });
 
         this.openMap('base');
         this.initCanvas(canvas);
-        this.mode = new TilesMode(this);
-        this.mode.init();
+
+        this.modes = {
+            'tiles': new TilesMode(this),
+            'terrain': new TerrainMode(this)
+        };
+        this.setMode('tiles');
+
         this.updateJSON();
     }
 
     _.extend(Editor.prototype, {
+        setMode: function(mode) {
+            this.mode = this.modes[mode];
+            this.mode.init();
+        },
         openMap: function(mapID) {
             this.tilemap = this.tilemap_collection.get(mapID);
         },
@@ -43,6 +53,7 @@ function(_, $, loader, Tilemap, TilemapCollection, TilesMode) {
             this.ctx.fillRect(0, 0, 160, 144);
             this.tilemap.animate();
             this.tilemap.draw(this.ctx, 0, 0);
+            this.mode.render(this.ctx);
         },
         updateJSON: function() {
             this.$json.val(JSON.stringify(this.tilemap_collection.map_data));
@@ -87,7 +98,14 @@ function(_, $, loader, Tilemap, TilemapCollection, TilesMode) {
     }
 
     function start() {
+        $('#modes a').click(function() {
+            editor.setMode($(this).data('mode'));
+            $('#modes li').removeClass('active');
+            $(this).parent('li').addClass('active');
+        });
+
         loader.loadResources('resources.json');
+        loader.loadResources('editor_resources.json');
         loader.onload(function() {
             editor = new Editor(document.getElementById('map'),
                                 loader.get('map'));

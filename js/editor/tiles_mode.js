@@ -48,6 +48,7 @@ define(['underscore', 'jquery', 'ICanHaz'], function(_, $, ich) {
             this.editor.tilemap.setTile(tx, ty, this.currentTile);
             this.editor.updateJSON();
         },
+        render: function() {},
         setCurrentTile: function(tile) {
             this.currentTile = tile;
 
