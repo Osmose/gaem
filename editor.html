@@ -27,14 +27,7 @@
         <section id="map-container" class="span9">
           <canvas id="map"></canvas>
         </section>
-        <section id="sidebar" class="span7">
-          <div id="current-tile">
-            <h3>Current Tile:</h3>
-            <canvas id="curtile"></canvas>
-          </div>
-          <h3>Palette</h3>
-          <canvas id="palette"></canvas>
-        </section>
+        <section id="sidebar" class="span7"></section>
       </div>
       <div class="row">
         <section id="json-container" class="span16">
@@ -44,5 +37,13 @@
       </div>
     </article>
     <script data-main="js/editor/editor.js" src="js/require.js"></script>
+    <script id="tiles_mode" type="text/html">
+      <div id="current-tile-container">
+        <h3>Current Tile:</h3>
+        <canvas id="current-tile"></canvas>
+      </div>
+      <h3>Palette</h3>
+      <canvas id="palette"></canvas>
+    </script>
   </body>
 </html>

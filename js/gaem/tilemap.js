@@ -1,9 +1,9 @@
-define(['underscore'], function(_) {
-    function Tilemap(loader, map) {
+define(['underscore', 'loader'], function(_, loader) {
+    function Tilemap(map_data) {
         var self = this;
 
-        _.extend(this, map);
-        this.tileset = loader.get(this.tileset);
+        this.data = map_data;
+        this.tileset = loader.get(map_data.tileset);
 
         // Set up animation data
         this.anim = {};
@@ -42,13 +42,16 @@ define(['underscore'], function(_) {
                 return tilenum;
             }
         },
+        setTile: function(tx, ty, tilenum) {
+            this.data.map[ty][tx] = tilenum;
+        },
         draw: function(ctx, x, y) {
             this.animate();
 
-            for (var ty = 0; ty < this.height; ty++) {
-                for (var tx = 0; tx < this.width; tx++) {
+            for (var ty = 0; ty < this.data.height; ty++) {
+                for (var tx = 0; tx < this.data.width; tx++) {
                     this.tileset.drawTile(ctx,
-                                          this.getTile(this.map[ty][tx]),
+                                          this.getTile(this.data.map[ty][tx]),
                                           x + (tx * this.tileset.tw),
                                           y + (ty * this.tileset.th));
                 }
@@ -58,7 +61,7 @@ define(['underscore'], function(_) {
             var bounds = this.getContainingTiles(box);
             for (var ty = bounds.top; ty <= bounds.bottom; ty++) {
                 for (var tx = bounds.left; tx <= bounds.right; tx++) {
-                    if (this.collision_map[ty][tx] == 1) {
+                    if (this.data.collision_map[ty][tx] == 1) {
                         return true;
                     }
                 }

@@ -7,7 +7,7 @@ require.config({
 
 require(['underscore', 'jquery', 'keyboardcontrols', 'entities/player',
          'loader', 'tilemap', 'util'],
-function(_, $, KeyboardControls, Player, Loader, Tilemap, util) {
+function(_, $, KeyboardControls, Player, loader, Tilemap, util) {
     function Engine() {
         this.WIDTH = 160;
         this.HEIGHT = 144;
@@ -88,17 +88,15 @@ function(_, $, KeyboardControls, Player, Loader, Tilemap, util) {
 
     function start() {
         var engine = window.engine = new Engine();
-        engine.loader = new Loader('assets/');
-        engine.loader.loadResources('resources.json');
+        loader.loadResources('resources.json');
 
-        engine.loader.onload(function() {
+        loader.onload(function() {
             engine.entities.push(new Player(engine, {
                 x: 16,
                 y: 16,
-                tiles: engine.loader.get('entities')
+                tiles: loader.get('entities')
             }));
-            engine.tilemap = new Tilemap(engine.loader,
-                                         engine.loader.get('map')['base']);
+            engine.tilemap = new Tilemap(loader.get('map')['base']);
 
             engine.running = true;
             loop();

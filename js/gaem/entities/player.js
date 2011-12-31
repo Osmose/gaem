@@ -1,4 +1,4 @@
-define(['underscore'], function(_) {
+define(['underscore', 'loader'], function(_, loader) {
     function Player(engine, options) {
         this.engine = engine;
 
@@ -8,7 +8,7 @@ define(['underscore'], function(_) {
         });
         _.extend(this, options);
 
-        this.tiles = engine.loader.get('entities');
+        this.tiles = loader.get('entities');
 
         var anim = this.anim = {};
         anim[this.UP] = [2, 10, 3, 10];

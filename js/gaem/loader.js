@@ -138,5 +138,6 @@ define(['underscore', 'jquery'], function(_, $) {
         }
     });
 
-    return Loader;
+    // TODO: Figure out a better place for the asset path
+    return new Loader('assets/');
 });
