@@ -1,4 +1,4 @@
-define(['underscore', 'tilemap'], function(_, Tilemap) {
+define(['underscore', 'core/tilemap'], function(_, Tilemap) {
     function TilemapCollection(map_data) {
         this.map_data = map_data;
         this._tilemaps = {};

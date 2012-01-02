@@ -1,4 +1,4 @@
-define(['underscore', 'loader'], function(_, loader) {
+define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
     function Player(engine, options) {
         this.engine = engine;
 
@@ -11,22 +11,18 @@ define(['underscore', 'loader'], function(_, loader) {
         this.tiles = loader.get('entities');
 
         var anim = this.anim = {};
-        anim[this.UP] = [2, 10, 3, 10];
-        anim[this.DOWN] = [0, 10, 1, 10];
-        anim[this.LEFT] = [4, 10, 5, 10];
-        anim[this.RIGHT] = [6, 10, 7, 10];
+        anim[util.UP] = [2, 10, 3, 10];
+        anim[util.DOWN] = [0, 10, 1, 10];
+        anim[util.LEFT] = [4, 10, 5, 10];
+        anim[util.RIGHT] = [6, 10, 7, 10];
 
         this.moving = false;
-        this.setState(this.DOWN);
+        this.setState(util.DOWN);
 
         this.bounding_box = {left: 1, top: 1, right: 15, bottom: 15};
     }
 
     _.extend(Player.prototype, {
-        UP: 0,
-        DOWN: 1,
-        LEFT: 2,
-        RIGHT: 3,
         animate: function(ctx) {
             if (this.moving === true && this.anim_delay !== null) {
                 this.anim_delay--;
@@ -53,25 +49,33 @@ define(['underscore', 'loader'], function(_, loader) {
                 vx = 0, vy = 0;
 
             var newState = null;
-            if (kb.keys[kb.RIGHT]) {vx += 1; newState = this.RIGHT;}
-            if (kb.keys[kb.LEFT]) {vx -= 1; newState = this.LEFT;}
-            if (kb.keys[kb.DOWN]) {vy += 1; newState = this.DOWN;}
-            if (kb.keys[kb.UP]) {vy -= 1; newState = this.UP;}
+            if (kb.keys[kb.RIGHT]) {vx += 1; newState = util.RIGHT;}
+            if (kb.keys[kb.LEFT]) {vx -= 1; newState = util.LEFT;}
+            if (kb.keys[kb.DOWN]) {vy += 1; newState = util.DOWN;}
+            if (kb.keys[kb.UP]) {vy -= 1; newState = util.UP;}
 
             var xCollides = this.collides(vx, 0),
-                yCollides = this.collides(0, vy);
+                yCollides = this.collides(0, vy),
+                collides = _.union(xCollides, yCollides);
             if (xCollides.length !== 0) vx = 0;
             if (yCollides.length !== 0) vy = 0;
 
-            this.x += vx;
-            this.y += vy;
-            this.moving = (vx !== 0 || vy !== 0);
             if (newState !== null) {
                 this.setState(newState);
             } else if (!this.moving) {
                 // Prevents odd single-pixel-no-animation movement
                 this.anim_delay = 0;
             }
+
+            // Check for map transition
+            if (collides.indexOf('bounds') !== -1) {
+                this.engine.mapTransition(newState);
+                return;
+            }
+
+            this.x += vx;
+            this.y += vy;
+            this.moving = (vx !== 0 || vy !== 0);
         },
         collides: function(vx, vy) {
             var box = this.getBoundingBox(this.x + vx, this.y + vy);

@@ -1,4 +1,4 @@
-define(['underscore', 'loader'], function(_, loader) {
+define(['underscore', 'core/loader'], function(_, loader) {
     function Tilemap(map_data) {
         var self = this;
         _.extend(this, {
