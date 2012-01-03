@@ -1,4 +1,4 @@
-define(['underscore', 'core/loader'], function(_, loader) {
+define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
     function Tilemap(map_data) {
         var self = this;
         _.extend(this, {
@@ -24,6 +24,12 @@ define(['underscore', 'core/loader'], function(_, loader) {
     }
 
     _.extend(Tilemap.prototype, {
+        SOLID: 1,
+        DOOR: 2,
+        tile_types: {
+            1: 'solid',
+            2: 'door'
+        },
         animate: function() {
             _.each(this.anim, function(tile_anim) {
                 tile_anim.delay--;
@@ -48,7 +54,6 @@ define(['underscore', 'core/loader'], function(_, loader) {
         setTile: function(tx, ty, tilenum) {
             this.data.map[ty][tx] = tilenum;
         },
-
         // IDEA: "Animated" terrain?
         getTerrain: function(tx, ty) {
             return this.data.terrain[ty][tx];
@@ -56,8 +61,24 @@ define(['underscore', 'core/loader'], function(_, loader) {
         setTerrain: function(tx, ty, terrain) {
             this.data.terrain[ty][tx] = terrain;
         },
+        _door_key: _.template('<%=tx%>-<%=ty%>'),
+        getDoor: function(tx, ty) {
+            var key = this._door_key({tx: tx, ty: ty});
+            if (this.data.doors.hasOwnProperty(key)) {
+                return this.data.doors[key];
+            }
 
-        draw: function(ctx, x, y) {
+            return null;
+        },
+        getAdjacentMap: function(direction) {
+            var direction_string = util.directionToString(direction);
+            if (this.data[direction_string] !== null) {
+                return this.data[direction_string];
+            }
+
+            return null;
+        },
+        render: function(ctx, x, y) {
             this.animate();
 
             for (var ty = 0; ty < this.data.height; ty++) {
@@ -70,16 +91,25 @@ define(['underscore', 'core/loader'], function(_, loader) {
             }
         },
         collides: function(box) {
-            var bounds = this.getContainingTiles(box);
+            var bounds = this.getContainingTiles(box),
+                collides = {
+                    solid: false,
+                    doors: []
+                };
             for (var ty = bounds.top; ty <= bounds.bottom; ty++) {
                 for (var tx = bounds.left; tx <= bounds.right; tx++) {
-                    if (this.data.terrain[ty][tx] == 1) {
-                        return true;
+                    switch (this.data.terrain[ty][tx]) {
+                    case this.SOLID:
+                        collides.solid = true;
+                        break;
+                    case this.DOOR:
+                        collides.doors.push({tx: tx, ty: ty});
+                        break;
                     }
                 }
             }
 
-            return false;
+            return collides;
         },
         getContainingTiles: function(box) {
             // Bound units are tiles, inclusive

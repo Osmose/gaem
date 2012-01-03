@@ -1,4 +1,4 @@
-define(['underscore', 'ICanHaz', 'loader'], function(_, ich, loader) {
+define(['underscore', 'ICanHaz', 'core/loader'], function(_, ich, loader) {
     function TerrainMode(editor) {
         var tileset = this.tileset = loader.get('terrain');
 

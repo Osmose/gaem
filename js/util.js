@@ -1,6 +1,6 @@
 define(function() {
     return {
-        LEFT: 0, WEST: 0,
+        LEFT: 4, WEST: 4,
         RIGHT: 1, EAST: 1,
         UP: 2, NORTH: 2,
         DOWN: 3, SOUTH: 3,
@@ -29,14 +29,16 @@ define(function() {
         },
 
         // Checks if one box contains another.
-        // Returns the broken side, or true if contained.
+        // Returns the broken side, or null if contained.
         box_contains: function(box, container) {
             if (box.left < container.left) return this.LEFT;
             if (box.right > container.right) return this.RIGHT;
             if (box.top < container.top) return this.UP;
             if (box.bottom > container.bottom) return this.DOWN;
 
-            return true;
-        }
+            return null;
+        },
+
+        nop: function() {}
     };
 });

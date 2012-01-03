@@ -54,11 +54,10 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
             if (kb.keys[kb.DOWN]) {vy += 1; newState = util.DOWN;}
             if (kb.keys[kb.UP]) {vy -= 1; newState = util.UP;}
 
-            var xCollides = this.collides(vx, 0),
-                yCollides = this.collides(0, vy),
-                collides = _.union(xCollides, yCollides);
-            if (xCollides.length !== 0) vx = 0;
-            if (yCollides.length !== 0) vy = 0;
+            var xc = this.collides(vx, 0),
+                yc = this.collides(0, vy);
+            if (xc.solid) vx = 0;
+            if (yc.solid) vy = 0;
 
             if (newState !== null) {
                 this.setState(newState);
@@ -67,10 +66,30 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                 this.anim_delay = 0;
             }
 
-            // Check for map transition
-            if (collides.indexOf('bounds') !== -1) {
-                this.engine.mapTransition(newState);
+            // Check for movement off the side of the screen
+            var edge = xc.edge || yc.edge;
+            if (edge !== null) {
+                var map = this.engine.tilemap.getAdjacentMap(edge);
+                if (map !== null) {
+                    this.engine.startTransition(map, 'slide', {
+                        direction: edge
+                    });
+                }
+
                 return;
+            }
+
+            // Check for a door
+            var doors = _.union(xc.tiles.doors, yc.tiles.doors);
+            if (doors.length > 0) {
+                var tilemap = this.engine.tilemap,
+                    door = tilemap.getDoor(doors[0].tx, doors[0].ty);
+                if (door !== null) {
+                    this.engine.startTransition(door.target, 'fade', {
+                        player_x: door.x,
+                        player_y: door.y
+                    });
+                }
             }
 
             this.x += vx;

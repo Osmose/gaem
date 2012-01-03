@@ -1,6 +1,6 @@
 define(['underscore', 'core/keyboardcontrols', 'core/tilemap_collection',
-         'util'],
-function(_, KeyboardControls, TilemapCollection, util) {
+         'core/transition', 'util'],
+function(_, KeyboardControls, TilemapCollection, Transition, util) {
     var requestFrame = (function() {
         return window.mozRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
@@ -11,18 +11,22 @@ function(_, KeyboardControls, TilemapCollection, util) {
     })();
 
     function Engine() {
-        this.WIDTH = 160;
-        this.HEIGHT = 144;
-        this.SCALE = 3;
-        this.running = false;
-        this.kb = new KeyboardControls();
-        this.entities = [];
-        this.tilemap = null;
-        this.tilemap_collection = null;
-        this.player = null;
+        _.extend(this, {
+            WIDTH: 160,
+            HEIGHT: 144,
+            SCALE: 3,
+
+            entities: [],
+            kb: new KeyboardControls(),
+            player: null,
+            running: false,
+            tilemap: null,
+            tilemap_collection: null,
+            transition: null
+        });
+
         this.screen_box = {left: 0, top: 0, right: this.WIDTH,
                            bottom: this.HEIGHT - 16};
-
         this.bound_loop = this.loop.bind(this);
 
         this.canvas = document.createElement('canvas');
@@ -45,6 +49,9 @@ function(_, KeyboardControls, TilemapCollection, util) {
             }
         },
         tick: function() {
+            // Don't process normally during a transition
+            if (this.transition !== null) return;
+
             if (this.player !== null) {
                 this.player.tick();
             }
@@ -59,8 +66,19 @@ function(_, KeyboardControls, TilemapCollection, util) {
             this.ctx.fillStyle = '#FFFF8B';
             this.ctx.fillRect(0, 0, this.WIDTH, this.HEIGHT);
 
+            // Transition handles animation if present
+            if (this.transition !== null) {
+                if (this.transition.isComplete()) {
+                    this.tilemap = this.transition.to;
+                    this.transition = null;
+                } else {
+                    this.transition.renderStep(this.ctx);
+                    return;
+                }
+            }
+
             if (this.tilemap !== null) {
-                this.tilemap.draw(this.ctx, 0, 0);
+                this.tilemap.render(this.ctx, 0, 0);
             }
 
             _.each(this.entities, function(entity) {
@@ -71,21 +89,15 @@ function(_, KeyboardControls, TilemapCollection, util) {
                 this.player.render(this.ctx);
             }
         },
-        collides: function(box, border_collision) {
-            var collides = [];
-            if (border_collision === undefined) border_collision = true;
+        collides: function(box) {
+            var tiles = this.tilemap.collides(box),
+                edge = util.box_contains(box, this.screen_box);
 
-            if (border_collision) {
-                if (util.box_contains(box, this.screen_box) !== true) {
-                    collides.push('bounds');
-                }
-            }
-
-            if (this.tilemap.collides(box)) {
-                collides.push('tiles');
-            }
-
-            return collides;
+            return {
+                edge: edge,
+                tiles: tiles,
+                solid: (edge !== null || tiles.solid)
+            };
         },
         loadTilemaps: function(data) {
             this.tilemap_collection = new TilemapCollection(data);
@@ -93,30 +105,12 @@ function(_, KeyboardControls, TilemapCollection, util) {
         setTilemap: function(id) {
             this.tilemap = this.tilemap_collection.get(id);
         },
-        mapTransition: function(direction) {
-            var direction_string = util.directionToString(direction);
-            if (this.tilemap.data[direction_string] !== null) {
-                var player = this.player;
-
-                switch (direction) {
-                case util.WEST:
-                    player.x = this.WIDTH - player.bounding_box.right;
-                    break;
-                case util.EAST:
-                    player.x = player.bounding_box.left;
-                    break;
-                case util.NORTH:
-                    player.y = this.HEIGHT - 16 - player.bounding_box.bottom;
-                    break;
-                case util.SOUTH:
-                    player.y = player.bounding_box.top;
-                    break;
-                }
-
-                this.setTilemap(this.tilemap.data[direction_string]);
-            };
+        startTransition: function(mapId, type, params) {
+            var mapTo = this.tilemap_collection.get(mapId);
+            this.transition = new Transition(type, this, this.tilemap, mapTo,
+                                             params);
         }
-    });;
+    });
 
     return Engine;
 });

@@ -1,16 +1,13 @@
 require.config({
     paths: {
-        ICanHaz: '../lib/ICanHaz',
-        underscore: '../lib/underscore',
-        jquery: '../lib/jquery',
-        loader: '../gaem/loader',
-        tilemap: '../gaem/tilemap',
-        tilemap_collection: '../gaem/tilemap_collection'
+        ICanHaz: 'lib/ICanHaz',
+        underscore: 'lib/underscore',
+        jquery: 'lib/jquery'
     }
 });
 
-require(['underscore', 'jquery','loader', 'tilemap', 'tilemap_collection',
-         'tiles_mode', 'terrain_mode'],
+require(['underscore', 'jquery', 'core/loader', 'core/tilemap',
+         'core/tilemap_collection', 'editor/tiles_mode', 'editor/terrain_mode'],
 function(_, $, loader, Tilemap, TilemapCollection, TilesMode, TerrainMode) {
     function Editor(canvas, map_data) {
         var self = this;
