@@ -1,9 +1,47 @@
-define(function() {
+define(['underscore'], function(_) {
     return {
         LEFT: 4, WEST: 4,
         RIGHT: 1, EAST: 1,
         UP: 2, NORTH: 2,
         DOWN: 3, SOUTH: 3,
+
+        // Gets an attribute on an object, returning a default value if the
+        // attribute does not exist
+        oget: function(obj, attr, def) {
+            if (def === undefined) {
+                def = '';
+            }
+
+            if (!_.isEmpty(obj) && obj.hasOwnProperty(attr)) {
+                return obj[attr];
+            } else {
+                return def;
+            }
+        },
+
+        // Initializes a canvas with the given width, height, and scale.
+        // If not canvas is given, creates and returns a new canvas.
+        canvas: function(width, height, scale, canvas) {
+            if (canvas === undefined) canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            ctx.scale(scale, scale);
+            ctx.mozImageSmoothingEnabled = false;
+
+            return canvas;
+        },
+
+        // Render a map (double array) to a canvas using the given tileset
+        renderMap: function(ctx, map, tileset, width, height) {
+            for (var ty = 0; ty < height; ty++) {
+                for (var tx = 0; tx < width; tx++) {
+                    tileset.drawTile(ctx, map[ty][tx], tx * tileset.tw,
+                                     ty * tileset.th);
+                }
+            }
+        },
 
         // Maps direction numbers to string names. Used for serialization.
         directionToString: function(direction) {

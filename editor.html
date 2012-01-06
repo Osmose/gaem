@@ -16,48 +16,149 @@
     <article class="container">
       <div class="row">
         <nav class="span16">
-          <ul id="modes" class="pills">
-            <li class="active"><a href="#" data-mode="tiles">Tiles</a></li>
-            <li><a href="#" data-mode="terrain">Terrain</a></li>
+          <ul id="modes" class="tabs">
+            <li class="active"><a href="#game-editor">Maps</a></li>
+            <li><a href="#tilemap-editor">Tiles</a></li>
+            <li><a href="#terrain-editor">Terrain</a></li>
           </ul>
         </nav>
       </div>
-      <div class="row">
-        <section id="map-container" class="span9">
-          <canvas id="map"></canvas>
+
+      <div class="editors">
+        <section id="game-editor">
+          <div class="row">
+            <div class="span9 map-container">
+              <canvas data-bind="tileEditor: {click: $.noop, map: currentMap}"></canvas>
+            </div>
+            <div class="span7 sidebar">
+              <div class="current-container">
+                <h3>Current Map:</h3>
+                <select data-bind="options: maps,
+                                   optionsText: 'id',
+                                   optionsValue: 'id',
+                                   value: currentMapId">
+                </select>
+                <a class="btn success"
+                   data-controls-modal="add-map-dialog"
+                   data-backdrop="true">Add Map</a>
+              </div>
+
+              <table class="bordered-table" data-bind="with: currentMap">
+                <thead>
+                  <tr>
+                    <th>Direction</th>
+                    <th>Map</th>
+                  </tr>
+                </thead>
+                <tbody data-bind="foreach: ['north', 'south', 'east', 'west']">
+                  <tr>
+                    <td data-bind="text: $data"></td>
+                    <td>
+                      <select data-bind="options: $root.maps,
+                                         optionsText: 'id',
+                                         optionsValue: 'id',
+                                         optionsCaption: '---',
+                                         value: $parent.exits[$data]">
+                      </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="add-map-dialog" class="modal hide fade">
+            <form data-bind="submit: addMap">
+              <div class="modal-header">
+                <a class="close" href="#">x</a>
+                <h3>Add New Map</h3>
+              </div>
+              <div class="modal-body">
+                <fieldset>
+                  <div class="clearfix">
+                    <label for="add-map-id">Map ID</label>
+                    <div class="input">
+                      <input id="add-map-id" type="text">
+                    </div>
+                  </div>
+                  <div class="clearfix">
+                    <label for="add-map-tileset">Tileset</label>
+                    <div class="input">
+                      <select id="add-map-tileset"
+                              data-bind="options: ['overworld', 'interior']">
+                      </select>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <div id="add-map-error" class="alert-message error hide">
+                  <p></p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn success" type="submit">Create Map</button>
+              </div>
+            </form>
+          </div>
         </section>
-        <section id="sidebar" class="span7"></section>
+
+        <section id="tilemap-editor">
+          <div class="row">
+            <div class="span9 map-container">
+              <canvas data-bind="tileEditor: {click: tileClick, map: currentMap}"></canvas>
+            </div>
+            <div class="span7 sidebar">
+              <div class="current-container">
+                <h3>Current Tile:</h3>
+                <canvas id="current-tile"
+                        data-bind="tile: {tileset: currentTileset,
+                                   tile: currentTile}">
+                </canvas>
+              </div>
+
+              <h3>Palette:</h3>
+              <canvas data-bind="tilePalette: {tileset: currentTileset,
+                                 currentTile: currentTile}">
+              </canvas>
+            </div>
+          </div>
+        </section>
+
+        <section id="terrain-editor">
+          <div class="row">
+            <div class="span9 map-container">
+              <canvas data-bind="overlayTilemapEditor: {map: currentMap,
+                                 overlayMap: currentTerrainMap,
+                                 overlayTileset: 'terrain',
+                                 click: terrainClick}">
+              </canvas>
+            </div>
+            <div class="span7 sidebar">
+              <div class="current-container">
+                <h3>Current Terrain: <span data-bind="text: currentTerrainName"></span></h3>
+                <canvas id="current-terrain"
+                        data-bind="tile: {tileset: terrainTileset,
+                                   tile: currentTerrain}">
+                </canvas>
+                <br />
+                <select data-bind="options: terrain,
+                                   optionsText: 'name',
+                                   optionsValue: 'value',
+                                   value: currentTerrain">
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-      <div class="row">
-        <section id="json-container" class="span16">
+
+      <section id="json-container" class="span16">
+        <div class="row">
           <h3>JSON Code</h3>
-          <textarea id="json"></textarea>
-        </section>
-      </div>
+          <textarea id="json" data-bind="text: game_json"></textarea>
+        </div>
+      </section>
     </article>
     <script data-main="js/editor.js" src="js/require.js"></script>
-
-    <script id="tiles_mode" type="text/html">
-      <div id="current-tile-container">
-        <h3>Current Tile:</h3>
-        <canvas id="current-tile"></canvas>
-      </div>
-      <h3>Palette</h3>
-      <canvas id="palette"></canvas>
-    </script>
-
-    <script id="terrain_mode" type="text/html">
-      <h3>Terrain</h3>
-      <ul id="terrain-list" class="inputs-list">
-        {{#terrain}}
-          <li>
-            <label>
-              <input type="radio" name="terrain" value="{{tile}}">
-              <span>{{{img}}} {{name}}</span>
-            </label>
-          </li>
-        {{/terrain}}
-      </ul>
-    </script>
   </body>
 </html>
