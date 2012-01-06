@@ -1,17 +1,24 @@
-define(['underscore', 'core/tilemap'], function(_, Tilemap) {
-    function TilemapCollection(map_data) {
-        this.map_data = map_data;
+define(['underscore', 'util', 'core/tilemap'], function(_, ut, Tilemap) {
+    function TilemapCollection(maps) {
+        this.maps = maps;;
         this._tilemaps = {};
     }
 
     _.extend(TilemapCollection.prototype, {
+        // Retrieve a map object with the given id.
+        // Maps are lazy-loaded from the game file.
         get: function(id) {
-            if (!this.map_data.hasOwnProperty(id)) {
-                return undefined;
-            }
+            if (ut.oget(this._tilemaps, id, false) === false) {
+                // Create the map
+                var map_data = _.find(this.maps, function(map) {
+                    return map.id === id;
+                });
 
-            if (!this._tilemaps.hasOwnProperty(id)) {
-                this._tilemaps[id] = new Tilemap(this.map_data[id]);
+                if (map_data === undefined) {
+                    return undefined;
+                } else {
+                    this._tilemaps[id] = new Tilemap(map_data);
+                }
             }
 
             return this._tilemaps[id];

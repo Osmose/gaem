@@ -19,7 +19,7 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
         this.moving = false;
         this.setState(util.DOWN);
 
-        this.bounding_box = {left: 1, top: 1, right: 15, bottom: 15};
+        this.bounding_box = {left: 3, top: 3, right: 13, bottom: 14};
     }
 
     _.extend(Player.prototype, {
@@ -86,8 +86,8 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                     door = tilemap.getDoor(doors[0].tx, doors[0].ty);
                 if (door !== null) {
                     this.engine.startTransition(door.target, 'fade', {
-                        player_x: door.x,
-                        player_y: door.y
+                        player_x: door.player.x,
+                        player_y: door.player.y
                     });
                 }
             }

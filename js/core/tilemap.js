@@ -1,16 +1,18 @@
 define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
     function Tilemap(map_data) {
         var self = this;
-        _.extend(this, {
-            data: map_data,
-            width: map_data.width,
-            height: map_data.height,
+
+        // Load attributes from map data
+        _.each(Tilemap.load_attrs, function(attr) {
+            self[attr] = map_data[attr];
+        });
+        _.extend(self, {
             tileset: loader.get(map_data.tileset),
             anim: {}
         });
 
         // Set up animation data
-        if (this.tileset.anim !== undefined) {
+        if (self.tileset.anim !== undefined) {
             _.each(this.tileset.anim, function(anim_data, i) {
                 self.anim[i] = {
                     tile: anim_data[0],
@@ -22,6 +24,8 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
             });
         }
     }
+    Tilemap.load_attrs = ['id', 'tiles', 'terrain', 'north', 'south', 'east',
+                          'west', 'doors', 'width', 'height'];
 
     _.extend(Tilemap.prototype, {
         SOLID: 1,
@@ -51,40 +55,40 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                 return tilenum;
             }
         },
-        setTile: function(tx, ty, tilenum) {
-            this.data.map[ty][tx] = tilenum;
-        },
         // IDEA: "Animated" terrain?
         getTerrain: function(tx, ty) {
-            return this.data.terrain[ty][tx];
+            return this.terrain[ty][tx];
         },
-        setTerrain: function(tx, ty, terrain) {
-            this.data.terrain[ty][tx] = terrain;
-        },
-        _door_key: _.template('<%=tx%>-<%=ty%>'),
-        getDoor: function(tx, ty) {
-            var key = this._door_key({tx: tx, ty: ty});
-            if (this.data.doors.hasOwnProperty(key)) {
-                return this.data.doors[key];
-            }
 
-            return null;
+        // Return the door at the specified tile, or null if there is none.
+        getDoor: function(tx, ty) {
+            var door = _.find(this.doors, function(door) {
+                return door.tx === tx && door.ty === ty;
+            });
+
+            return (door !== undefined) ? door : null;
         },
+
+        // Return the ID of the adjacent map in the specified direction,
+        // or null if there is none;
         getAdjacentMap: function(direction) {
             var direction_string = util.directionToString(direction);
-            if (this.data[direction_string] !== null) {
-                return this.data[direction_string];
+            if (this[direction_string] !== null) {
+                return this[direction_string];
             }
 
             return null;
         },
+
+        // Render this tilemap on the given canvas context at the given
+        // x/y position.
         render: function(ctx, x, y) {
             this.animate();
 
-            for (var ty = 0; ty < this.data.height; ty++) {
-                for (var tx = 0; tx < this.data.width; tx++) {
+            for (var ty = 0; ty < this.height; ty++) {
+                for (var tx = 0; tx < this.width; tx++) {
                     this.tileset.drawTile(ctx,
-                                          this.getTile(this.data.map[ty][tx]),
+                                          this.getTile(this.tiles[ty][tx]),
                                           x + (tx * this.tileset.tw),
                                           y + (ty * this.tileset.th));
                 }
@@ -98,7 +102,7 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                 };
             for (var ty = bounds.top; ty <= bounds.bottom; ty++) {
                 for (var tx = bounds.left; tx <= bounds.right; tx++) {
-                    switch (this.data.terrain[ty][tx]) {
+                    switch (this.terrain[ty][tx]) {
                     case this.SOLID:
                         collides.solid = true;
                         break;
