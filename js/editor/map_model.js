@@ -23,10 +23,10 @@ function(_, ko, ut, loader) {
                 this._getMap(data, 'terrain', width, height)
             ),
             exits: {
-                north: ko.observable(ut.oget(data, 'north')),
-                south: ko.observable(ut.oget(data, 'south')),
-                east: ko.observable(ut.oget(data, 'east')),
-                west: ko.observable(ut.oget(data, 'west'))
+                north: ko.observable(ut.oget(data.exits, 'north')),
+                south: ko.observable(ut.oget(data.exits, 'south')),
+                east: ko.observable(ut.oget(data.exits, 'east')),
+                west: ko.observable(ut.oget(data.exits, 'west'))
             },
             doors: ut.oget(data, 'doors', []),
             width: width,

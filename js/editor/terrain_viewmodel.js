@@ -1,5 +1,6 @@
-define(['underscore', 'jquery', 'knockout', 'util', 'editor/constants', 'core/loader'],
-function(_, $, ko, ut, cst, loader) {
+define(['underscore', 'jquery', 'knockout', 'util', 'editor/constants',
+        'core/loader', 'editor/common'],
+function(_, $, ko, ut, cst, loader, common) {
    function TerrainViewModel(editor) {
        var self = this;
        self.maps = editor.maps;
@@ -18,8 +19,13 @@ function(_, $, ko, ut, cst, loader) {
        });
        self.terrainTileset = ko.observable('terrain');
 
-       self.terrainClick = function(tx, ty) {
-           self.currentMap().terrain.set(tx, ty, self.currentTerrain());
+       self.terrainClick = function(pos) {
+           var terrain = self.currentTerrain(),
+               terrainMap = self.currentMap().terrain;
+
+           if (terrainMap.get(pos.tx, pos.ty) !== terrain) {
+               terrainMap.set(pos.tx, pos.ty, terrain);
+           }
        };
     }
 
@@ -34,17 +40,11 @@ function(_, $, ko, ut, cst, loader) {
         init: function(canvas, paramsAccessor) {
             var params = paramsAccessor(),
                 overlayTileset = loader.get(params.overlayTileset),
-                click = params.click;
+                click = params.click,
+                mousePos = common.createMousePos(overlayTileset);
             ut.canvas(cst.WIDTH, cst.HEIGHT, cst.SCALE, canvas);
 
-            $(canvas).click(function(e) {
-                var x = e.pageX - this.offsetLeft,
-                    y = e.pageY - this.offsetTop,
-                    tx = Math.floor(x / (overlayTileset.tw * cst.SCALE)),
-                    ty = Math.floor(y / (overlayTileset.th * cst.SCALE));
-
-                click(tx, ty);
-            });
+            common.bindDrawing(canvas, mousePos, click);
         },
         update: function(canvas, paramsAccessor) {
             var ctx = canvas.getContext('2d'),

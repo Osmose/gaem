@@ -24,8 +24,8 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
             });
         }
     }
-    Tilemap.load_attrs = ['id', 'tiles', 'terrain', 'north', 'south', 'east',
-                          'west', 'doors', 'width', 'height'];
+    Tilemap.load_attrs = ['id', 'tiles', 'terrain', 'exits', 'doors',
+                          'width', 'height'];
 
     _.extend(Tilemap.prototype, {
         SOLID: 1,
@@ -71,13 +71,9 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
 
         // Return the ID of the adjacent map in the specified direction,
         // or null if there is none;
-        getAdjacentMap: function(direction) {
+        getExit: function(direction) {
             var direction_string = util.directionToString(direction);
-            if (this[direction_string] !== null) {
-                return this[direction_string];
-            }
-
-            return null;
+            return util.oget(this.exits, direction_string) || null;
         },
 
         // Render this tilemap on the given canvas context at the given

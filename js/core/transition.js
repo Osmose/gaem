@@ -17,7 +17,7 @@ define(['underscore', 'util'], function(_, util) {
                 // TODO: Improve this code
                 if (step === len) {
                     var pdx = (engine.WIDTH - 16) / len,
-                        pdy = (engine.HEIGHT - 32) / len,
+                        pdy = (engine.HEIGHT - 31) / len,
                         mdx = engine.WIDTH / len,
                         mdy = (engine.HEIGHT - 16) / len;
 

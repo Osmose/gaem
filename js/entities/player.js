@@ -69,7 +69,7 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
             // Check for movement off the side of the screen
             var edge = xc.edge || yc.edge;
             if (edge !== null) {
-                var map = this.engine.tilemap.getAdjacentMap(edge);
+                var map = this.engine.tilemap.getExit(edge);
                 if (map !== null) {
                     this.engine.startTransition(map, 'slide', {
                         direction: edge

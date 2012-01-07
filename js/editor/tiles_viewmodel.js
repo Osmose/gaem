@@ -1,6 +1,6 @@
 define(['underscore', 'jquery', 'knockout', 'editor/constants', 'util',
-        'core/loader'],
-function(_, $, ko, cst, ut, loader) {
+        'core/loader', 'editor/common'],
+function(_, $, ko, cst, ut, loader, common) {
     function TilesViewModel(editor) {
         var self = this;
         self.maps = editor.maps;
@@ -11,8 +11,13 @@ function(_, $, ko, cst, ut, loader) {
             return self.currentMap().tileset();
         });
 
-        self.tileClick = function(tx, ty) {
-            self.currentMap().tiles.set(tx, ty, self.currentTile());
+        self.tileClick = function(pos) {
+            var tile = self.currentTile(),
+                tiles = self.currentMap().tiles;
+
+            if (tiles.get(pos.tx, pos.ty) !== tile) {
+                tiles.set(pos.tx, pos.ty, tile);
+            }
         };
     }
 
@@ -20,17 +25,11 @@ function(_, $, ko, cst, ut, loader) {
         init: function(canvas, paramsAccessor) {
             var params = paramsAccessor(),
                 click = params.click,
-                tileset = loader.get(params.map().tileset());
+                tileset = loader.get(params.map().tileset()),
+                mousePos = common.createMousePos(tileset);
             ut.canvas(cst.WIDTH, cst.HEIGHT, cst.SCALE, canvas);
 
-            $(canvas).click(function(e) {
-                var x = e.pageX - this.offsetLeft,
-                    y = e.pageY - this.offsetTop,
-                    tx = Math.floor(x / (tileset.tw * cst.SCALE)),
-                    ty = Math.floor(y / (tileset.th * cst.SCALE));
-
-                click(tx, ty);
-            });
+            common.bindDrawing(canvas, mousePos, click);
         },
         update: function(canvas, paramsAccessor) {
             var ctx = canvas.getContext('2d'),
