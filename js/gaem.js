@@ -15,12 +15,6 @@ function($, Engine, loader, Player) {
             engine.loadTilemaps(loader.get('map'));
             engine.setTilemap('base');
 
-            engine.player = new Player(engine, {
-                x: 16,
-                y: 16,
-                tiles: loader.get('entities')
-            });
-
             engine.running = true;
             engine.loop();
         });

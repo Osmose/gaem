@@ -25,7 +25,26 @@
             "xGap": 0,
             "yGap": 0,
             "anim": {}
+        },
+        "hearts": {
+            "path": "img/hearts.png",
+            "tileWidth": 8,
+            "tileHeight": 8,
+            "xGap": 0,
+            "yGap": 0,
+            "anim": {}
+        },
+        "hud_font": {
+            "path": "fonts/hud.png",
+            "tileWidth": 8,
+            "tileHeight": 8,
+            "xGap": 0,
+            "yGap": 0,
+            "anim": {}
         }
+    },
+    "images": {
+        "hud": "img/hud.png"
     },
     "json": {
         "map": "map.json"

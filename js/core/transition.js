@@ -1,4 +1,4 @@
-define(['underscore', 'util'], function(_, util) {
+define(['underscore', 'util', 'core/constants'], function(_, util, cst) {
     var types = {
         instant: {
             length: 1,
@@ -7,6 +7,7 @@ define(['underscore', 'util'], function(_, util) {
                 engine.player.y = params.player_y;
 
                 to.render(ctx, 0, 0);
+                engine.hud.render(ctx, 0, cst.MAP_HEIGHT);
                 engine.player.render(ctx);
             }
         },
@@ -16,10 +17,10 @@ define(['underscore', 'util'], function(_, util) {
                 var len = types.slide.length;
                 // TODO: Improve this code
                 if (step === len) {
-                    var pdx = (engine.WIDTH - 16) / len,
-                        pdy = (engine.HEIGHT - 31) / len,
-                        mdx = engine.WIDTH / len,
-                        mdy = (engine.HEIGHT - 16) / len;
+                    var pdx = (cst.WIDTH - 16) / len,
+                        pdy = (cst.MAP_HEIGHT - 15) / len,
+                        mdx = cst.MAP_WIDTH / len,
+                        mdy = cst.MAP_HEIGHT / len;
 
                     this.from_x = 0;
                     this.from_y = 0;
@@ -27,26 +28,26 @@ define(['underscore', 'util'], function(_, util) {
                     switch (params.direction) {
                     case util.WEST:
                         pdy = 0; mdy = 0;
-                        this.to_x = -engine.WIDTH;
+                        this.to_x = -cst.WIDTH;
                         this.to_y = 0;
                         break;
                     case util.EAST:
                         pdy = 0; pdx = -pdx;
                         mdy = 0; mdx = -mdx;
-                        this.to_x = engine.WIDTH;
+                        this.to_x = cst.WIDTH;
                         this.to_y = 0;
                         break;
                     case util.NORTH:
                         pdx = 0;
                         mdx = 0;
                         this.to_x = 0;
-                        this.to_y = -(engine.HEIGHT - 16);
+                        this.to_y = -cst.MAP_HEIGHT;
                         break;
                     case util.SOUTH:
                         pdx = 0; pdy = -pdy;
                         mdx = 0; mdy = -mdy;
                         this.to_x = 0;
-                        this.to_y = engine.HEIGHT - 16;
+                        this.to_y = cst.MAP_HEIGHT;
                         break;
                     }
 
@@ -66,6 +67,7 @@ define(['underscore', 'util'], function(_, util) {
 
                 to.render(ctx, this.to_x, this.to_y);
                 from.render(ctx, this.from_x, this.from_y);
+                engine.hud.render(ctx, 0, cst.MAP_HEIGHT);
                 engine.player.render(ctx);
             }
         },
@@ -92,11 +94,13 @@ define(['underscore', 'util'], function(_, util) {
                     engine.player.x = params.player_x;
                     engine.player.y = params.player_y;
                 }
+
+                engine.hud.render(ctx, 0, cst.MAP_HEIGHT);
                 engine.player.render(ctx);
 
                 ctx.save();
                 ctx.fillStyle = 'rgba(255,255,255,'+alpha+')';
-                ctx.fillRect(0, 0, engine.WIDTH, engine.HEIGHT);
+                ctx.fillRect(0, 0, cst.WIDTH, cst.HEIGHT);
                 ctx.restore();
             }
         }

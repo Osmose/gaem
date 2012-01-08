@@ -1,6 +1,9 @@
-define(['underscore', 'core/keyboardcontrols', 'core/tilemap_collection',
-         'core/transition', 'util'],
-function(_, KeyboardControls, TilemapCollection, Transition, util) {
+define(['underscore', 'core/constants', 'util', 'core/loader',
+        'core/keyboardcontrols', 'core/tilemap_collection', 'core/transition',
+        'entities/player', 'interface/hud'],
+function(_, cst, util, loader, KeyboardControls, TilemapCollection, Transition,
+         Player, HUD) {
+
     var requestFrame = (function() {
         return window.mozRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
@@ -12,29 +15,30 @@ function(_, KeyboardControls, TilemapCollection, Transition, util) {
 
     function Engine() {
         _.extend(this, {
-            WIDTH: 160,
-            HEIGHT: 144,
-            SCALE: 3,
-
             entities: [],
             kb: new KeyboardControls(),
-            player: null,
+            player: new Player(this, {
+                x: 16,
+                y: 16
+            }),
             running: false,
             tilemap: null,
             tilemap_collection: null,
             transition: null
         });
 
-        this.screen_box = {left: 0, top: 0, right: this.WIDTH,
-                           bottom: this.HEIGHT - 16};
+        this.hud = new HUD(this.player);
+
+        this.map_box = {left: 0, top: 0, right: cst.MAP_WIDTH,
+                           bottom: cst.MAP_HEIGHT};
         this.bound_loop = this.loop.bind(this);
 
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
-        this.canvas.width = this.WIDTH * this.SCALE;
-        this.canvas.height = this.HEIGHT * this.SCALE;
-        this.ctx.scale(this.SCALE, this.SCALE);
+        this.canvas.width = cst.WIDTH * cst.SCALE;
+        this.canvas.height = cst.HEIGHT * cst.SCALE;
+        this.ctx.scale(cst.SCALE, cst.SCALE);
         this.ctx.mozImageSmoothingEnabled = false;
 
         document.getElementById('gaem').appendChild(this.canvas);
@@ -64,7 +68,7 @@ function(_, KeyboardControls, TilemapCollection, Transition, util) {
             var self = this;
 
             this.ctx.fillStyle = '#FFFF8B';
-            this.ctx.fillRect(0, 0, this.WIDTH, this.HEIGHT);
+            this.ctx.fillRect(0, 0, cst.WIDTH, cst.HEIGHT);
 
             // Transition handles animation if present
             if (this.transition !== null) {
@@ -85,13 +89,15 @@ function(_, KeyboardControls, TilemapCollection, Transition, util) {
                 entity.render(self.ctx);
             });
 
+            this.hud.render(this.ctx, 0, cst.MAP_HEIGHT);
+
             if (this.player !== null) {
                 this.player.render(this.ctx);
             }
         },
         collides: function(box) {
             var tiles = this.tilemap.collides(box),
-                edge = util.box_contains(box, this.screen_box);
+                edge = util.box_contains(box, this.map_box);
 
             return {
                 edge: edge,

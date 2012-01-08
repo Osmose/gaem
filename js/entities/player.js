@@ -4,11 +4,12 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
 
         _.defaults(options, {
             x: 0,
-            y: 0
+            y: 0,
+            health: 3,
+            max_health: 3,
+            money: 0
         });
         _.extend(this, options);
-
-        this.tiles = loader.get('entities');
 
         var anim = this.anim = {};
         anim[util.UP] = [2, 10, 3, 10];
@@ -39,9 +40,11 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
             }
         },
         render: function(ctx) {
+            var tiles = loader.get('entities');
+
             this.animate();
-            if (this.tiles !== null) {
-                this.tiles.drawTile(ctx, this.anim_tile, this.x, this.y);
+            if (tiles !== null) {
+                tiles.drawTile(ctx, this.anim_tile, this.x, this.y);
             }
         },
         tick: function() {

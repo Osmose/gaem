@@ -77,6 +77,23 @@ define(['underscore'], function(_) {
             return null;
         },
 
-        nop: function() {}
+        nop: function() {},
+
+        // Render a string using the given tileset.
+        // Wraps text after `wrap` characters.
+        text: function(ctx, fontTileset, text, x, y, wrap) {
+            var fx = x,
+                fy = y;
+            for (var k = 0; k < text.length; k++) {
+                fontTileset.drawTile(ctx, text.charCodeAt(k), fx, fy);
+                fx += fontTileset.tw;
+
+                // Wrap text
+                if (k !== 0 && (k % wrap) === 0) {
+                    fx = x;
+                    fy += fontTileset.th;
+                }
+            }
+        }
     };
 });
