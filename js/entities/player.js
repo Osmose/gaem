@@ -1,72 +1,46 @@
-define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
-    function Player(engine, options) {
+define(['underscore', 'core/loader', 'util', 'entities/entity'],
+function(_, loader, util, Entity) {
+    function Player(engine, data) {
+        Entity.call(this, data);
         this.engine = engine;
 
-        _.defaults(options, {
-            x: 0,
-            y: 0,
+        _.extend(this, {
             health: 3,
             max_health: 3,
             money: 0
         });
-        _.extend(this, options);
-
-        var anim = this.anim = {};
-        anim[util.UP] = [2, 10, 3, 10];
-        anim[util.DOWN] = [0, 10, 1, 10];
-        anim[util.LEFT] = [4, 10, 5, 10];
-        anim[util.RIGHT] = [6, 10, 7, 10];
 
         this.moving = false;
-        this.setState(util.DOWN);
-
-        this.bounding_box = {left: 3, top: 3, right: 13, bottom: 14};
+        this.facing = 'down';
     }
 
-    _.extend(Player.prototype, {
-        animate: function(ctx) {
-            if (this.moving === true && this.anim_delay !== null) {
-                this.anim_delay--;
-                if (this.anim_delay <= 0) {
-                    var anim = this.anim[this.state];
-                    this.anim_frame += 2;
-                    if (this.anim_frame >= anim.length) {
-                        this.anim_frame = 0;
-                    }
-
-                    this.anim_tile = anim[this.anim_frame];
-                    this.anim_delay = anim[this.anim_frame + 1];
-                }
-            }
-        },
-        render: function(ctx) {
-            var tiles = loader.get('entities');
-
-            this.animate();
-            if (tiles !== null) {
-                tiles.drawTile(ctx, this.anim_tile, this.x, this.y);
-            }
-        },
+    _.extend(Player.prototype, Entity.prototype, {
         tick: function() {
             var kb = this.engine.kb,
                 vx = 0, vy = 0;
 
-            var newState = null;
-            if (kb.keys[kb.RIGHT]) {vx += 1; newState = util.RIGHT;}
-            if (kb.keys[kb.LEFT]) {vx -= 1; newState = util.LEFT;}
-            if (kb.keys[kb.DOWN]) {vy += 1; newState = util.DOWN;}
-            if (kb.keys[kb.UP]) {vy -= 1; newState = util.UP;}
+            // Read input to determine movement.
+            var newFacing = null;
+            if (kb.keys[kb.RIGHT]) {vx += 1; newFacing = 'right';}
+            if (kb.keys[kb.LEFT]) {vx -= 1; newFacing = 'left';}
+            if (kb.keys[kb.DOWN]) {vy += 1; newFacing = 'down';}
+            if (kb.keys[kb.UP]) {vy -= 1; newFacing = 'up';}
 
+            // Check for collision.
             var xc = this.collides(vx, 0),
                 yc = this.collides(0, vy);
             if (xc.solid) vx = 0;
             if (yc.solid) vy = 0;
+            this.moving = (vx !== 0 || vy !== 0);
 
-            if (newState !== null) {
-                this.setState(newState);
-            } else if (!this.moving) {
-                // Prevents odd single-pixel-no-animation movement
-                this.anim_delay = 0;
+            // Change facing and sprite if needed.
+            if (newFacing !== null) {
+                this.facing = newFacing;
+            }
+            if (this.moving) {
+                this.setSprite(this.facing + '_move');
+            } else {
+                this.setSprite(this.facing);
             }
 
             // Check for movement off the side of the screen
@@ -95,34 +69,9 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                 }
             }
 
+            // Move player.
             this.x += vx;
             this.y += vy;
-            this.moving = (vx !== 0 || vy !== 0);
-        },
-        collides: function(vx, vy) {
-            var box = this.getBoundingBox(this.x + vx, this.y + vy);
-            return this.engine.collides(box);
-        },
-        getBoundingBox: function(x, y) {
-            return {
-                left: x + this.bounding_box.left,
-                right: x + this.bounding_box.right,
-                top: y + this.bounding_box.top,
-                bottom: y + this.bounding_box.bottom
-            };
-        },
-        setState: function(state) {
-            if (state !== this.state) {
-                this.state = state;
-                if (_.isArray(this.anim[state])) {
-                    this.anim_tile = this.anim[state][0];
-                    this.anim_delay = this.anim[state][1];
-                    this.anim_frame = 0;
-                } else {
-                    this.anim_tile = this.anim[state];
-                    this.anim_delay = null;
-                }
-            }
         }
     });
 

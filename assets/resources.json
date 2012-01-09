@@ -47,6 +47,6 @@
         "hud": "img/hud.png"
     },
     "json": {
-        "map": "map.json"
+        "gamedata": "game.json"
     }
 }

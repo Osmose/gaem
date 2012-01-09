@@ -12,11 +12,9 @@ function($, Engine, loader, Player) {
         loader.loadResources('resources.json');
 
         loader.onload(function() {
-            engine.loadTilemaps(loader.get('map'));
+            engine.loadGameData(loader.get('gamedata'));
             engine.setTilemap('base');
-
-            engine.running = true;
-            engine.loop();
+            engine.startGame();
         });
     });
 });
