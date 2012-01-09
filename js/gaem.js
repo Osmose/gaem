@@ -1,7 +1,8 @@
 require.config({
     paths: {
         underscore: 'lib/underscore',
-        jquery: 'lib/jquery'
+        jquery: 'lib/jquery',
+        signals: 'lib/signals'
     }
 });
 

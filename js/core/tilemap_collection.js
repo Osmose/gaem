@@ -1,6 +1,7 @@
 define(['underscore', 'util', 'core/tilemap'], function(_, ut, Tilemap) {
-    function TilemapCollection(maps) {
-        this.maps = maps;;
+    function TilemapCollection(engine, maps) {
+        this.engine = engine;
+        this.maps = maps;
         this._tilemaps = {};
     }
 
@@ -17,7 +18,7 @@ define(['underscore', 'util', 'core/tilemap'], function(_, ut, Tilemap) {
                 if (map_data === undefined) {
                     return undefined;
                 } else {
-                    this._tilemaps[id] = new Tilemap(map_data);
+                    this._tilemaps[id] = new Tilemap(this.engine, map_data);
                 }
             }
 

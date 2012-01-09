@@ -18,6 +18,7 @@ function(_, cst, util, loader, KeyboardControls, TilemapCollection, Transition,
     function Engine(game_data) {
         _.extend(this, {
             entities: [],
+            entityClasses: {},
             kb: new KeyboardControls(),
             hud: null,
             map_box: {left: 0, top: 0, right: cst.MAP_WIDTH,
@@ -79,7 +80,7 @@ function(_, cst, util, loader, KeyboardControls, TilemapCollection, Transition,
             // Transition handles animation if present
             if (this.transition !== null) {
                 if (this.transition.isComplete()) {
-                    this.tilemap = this.transition.to;
+                    this.setTilemap(this.transition.to.id);
                     this.transition = null;
                 } else {
                     this.transition.renderStep(this.ctx);
@@ -112,18 +113,33 @@ function(_, cst, util, loader, KeyboardControls, TilemapCollection, Transition,
         // in the game.
         collides: function(box) {
             var tiles = this.tilemap.collides(box),
-                edge = util.box_contains(box, this.map_box);
+                edge = util.box_contains(box, this.map_box),
+                entities = [];
+
+            _.each(this.entities, function(entity) {
+                var collision = entity.collidesWith(box);
+                if (collision !== null) {
+                    entities.push(collision);
+                }
+            });
+
+            var entity_solid = _.any(entities, function(c) {
+                return c.solid;
+            });
 
             return {
                 edge: edge,
                 tiles: tiles,
-                solid: (edge !== null || tiles.solid)
+                entities: entities,
+                solid: (edge !== null || tiles.solid || entity_solid)
             };
         },
 
         // Set the current tilemap to a new one.
         setTilemap: function(id) {
             this.tilemap = this.tilemap_collection.get(id);
+            this.tilemap.resetEntities();
+            this.entities = this.tilemap.entities;
         },
 
         // Set up a transition from the current tilemap to a new one.
@@ -135,9 +151,11 @@ function(_, cst, util, loader, KeyboardControls, TilemapCollection, Transition,
 
         // Load game data, which includes map and entity information.
         loadGameData: function(data) {
-            this.tilemap_collection = new TilemapCollection(data.maps);
+            this.tilemap_collection = new TilemapCollection(this, data.maps);
             this.player = new Player(this, data.player);
             this.hud = new HUD(this.player);
+
+            this.entity_classes = data.entity_classes;
         },
 
         // Start the game loop.

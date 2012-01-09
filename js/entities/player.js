@@ -1,8 +1,7 @@
 define(['underscore', 'core/loader', 'util', 'entities/entity'],
 function(_, loader, util, Entity) {
     function Player(engine, data) {
-        Entity.call(this, data);
-        this.engine = engine;
+        Entity.call(this, engine, data);
 
         _.extend(this, {
             health: 3,
@@ -67,6 +66,21 @@ function(_, loader, util, Entity) {
                         player_y: door.player.y
                     });
                 }
+            }
+
+            // Check for entity interaction
+            var entities = _(yc.entities).chain()
+                    .union(xc.entities)
+                    .map(function (collision) {
+                        return collision.entity;
+                    })
+                    .uniq(function(entity) {
+                        return entity.id;
+                    })
+                    .value();
+            if (kb.keys[kb.A] && entities.length > 0) {
+                // TODO: Handle multiple-entity interaction.
+                entities[0].handle('interact', this);
             }
 
             // Move player.

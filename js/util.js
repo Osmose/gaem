@@ -77,7 +77,8 @@ define(['underscore'], function(_) {
             return null;
         },
 
-        nop: function() {},
+        // Empty function
+        noop: function() {},
 
         // Render a string using the given tileset.
         // Wraps text after `wrap` characters.

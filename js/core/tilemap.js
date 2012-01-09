@@ -1,18 +1,25 @@
-define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
-    function Tilemap(map_data) {
+define(['underscore', 'core/loader', 'util', 'entities/entity_instance'],
+function(_, loader, util, EntityInstance) {
+    // Handles rendering and processing of a grid of tiles.
+    function Tilemap(engine, map_data) {
         var self = this;
-
-        // Load attributes from map data
-        _.each(Tilemap.load_attrs, function(attr) {
-            self[attr] = map_data[attr];
-        });
-        _.extend(self, {
+        _.extend(this, map_data, {
+            entities: [],
             tileset: loader.get(map_data.tileset),
             anim: {}
         });
 
+        // Initialize entities
+        if ('entities' in map_data) {
+            _.each(map_data.entities, function(data) {
+                // Augment parameters with those defined by the entity class.
+                _.defaults(data, engine.entity_classes[data.entity_class]);
+                self.entities.push(new EntityInstance(engine, data));
+            });
+        }
+
         // Set up animation data
-        if (self.tileset.anim !== undefined) {
+        if (this.tileset.anim !== undefined) {
             _.each(this.tileset.anim, function(anim_data, i) {
                 self.anim[i] = {
                     tile: anim_data[0],
@@ -24,8 +31,6 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
             });
         }
     }
-    Tilemap.load_attrs = ['id', 'tiles', 'terrain', 'exits', 'doors',
-                          'width', 'height'];
 
     _.extend(Tilemap.prototype, {
         SOLID: 1,
@@ -34,6 +39,8 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
             1: 'solid',
             2: 'door'
         },
+
+        // Animate a single frame of all the tiles in this map.
         animate: function() {
             _.each(this.anim, function(tile_anim) {
                 tile_anim.delay--;
@@ -48,6 +55,9 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                 }
             });
         },
+
+        // If the given tile number is animated, get the tile number for
+        // its current frame.
         getTile: function(tilenum) {
             if (this.anim.hasOwnProperty(tilenum)) {
                 return this.anim[tilenum].tile;
@@ -55,6 +65,7 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                 return tilenum;
             }
         },
+
         // IDEA: "Animated" terrain?
         getTerrain: function(tx, ty) {
             return this.terrain[ty][tx];
@@ -90,6 +101,15 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
                 }
             }
         },
+
+        // Reset position and other attributes for entities.
+        resetEntities: function() {
+            _.each(this.entities, function(entity) {
+                entity.reset();
+            });
+        },
+
+        // Check which tiles a box collides with.
         collides: function(box) {
             var bounds = this.getContainingTiles(box),
                 collides = {
@@ -111,6 +131,9 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, util) {
 
             return collides;
         },
+
+        // Calculate the bounding box for which tiles are colliding with
+        // the given box.
         getContainingTiles: function(box) {
             // Bound units are tiles, inclusive
             return {

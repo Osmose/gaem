@@ -1,18 +1,19 @@
 define(['underscore', 'core/loader', 'util'], function(_, loader, ut) {
-    function Entity(data) {
+    function Entity(engine, data) {
         var self = this;
 
         _.defaults(data, {
+            id: _.uniqueId(),
             x: 0,
             y: 0,
             tileset_id: null,
             sprite_id: null,
+            solid: false,
             bounding_box: {left: 0, top: 0, right: 0, bottom: 0}
         });
-        _.extend(this, data);
 
-        // Non-configurable options
-        _.extend(this, {
+        _.extend(this, data, {
+            engine: engine,
             sprite_delay: null,
             sprite_tile: null,
             sprite_frame: 0
@@ -53,6 +54,8 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, ut) {
             }
         },
 
+        tick: ut.noop,
+
         // Render entity at it's current position.
         render: function(ctx) {
             var tiles = loader.get(this.tileset_id);
@@ -67,6 +70,22 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, ut) {
         collides: function(vx, vy) {
             var box = this.getBoundingBox(this.x + vx, this.y + vy);
             return this.engine.collides(box);
+        },
+
+        // Check if this entity is colliding with the given box.
+        // If there is a collision, return data about the collision.
+        // If not, return null.
+        collidesWith: function(box) {
+            var my_box = this.getBoundingBox(this.x, this.y);
+            if (ut.box_collision(my_box, box)) {
+                return {
+                    entity: this,
+                    damage: null,
+                    solid: this
+                };
+            } else {
+                return null;
+            }
         },
 
         // Generate a collision box for this entity at the given coordinates.
