@@ -2,163 +2,35 @@
 <html LANG="en-US">
   <head>
     <title>Gaem Editor</title>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="css/editor.css">
   </head>
   <body>
     <header class="topbar">
-      <div class="fill">
-        <div class="container">
-          <a class="brand" href="#">Gaem Editor</a>
-        </div>
+      <div class="buttons">
+        <button class="btn success" data-bind="click: save">Save Game</a>
       </div>
+      <h1>Gaem Editor</h1>
     </header>
-    <article class="container">
-      <div class="row">
-        <nav class="span16">
-          <ul id="modes" class="tabs">
-            <li class="active"><a href="#game-editor">Maps</a></li>
-            <li><a href="#tilemap-editor">Tiles</a></li>
-            <li><a href="#terrain-editor">Terrain</a></li>
-          </ul>
-        </nav>
-      </div>
-
-      <div class="editors">
-        <section id="game-editor">
-          <div class="row">
-            <div class="span9 map-container">
-              <canvas data-bind="tileEditor: {click: $.noop, map: currentMap}"></canvas>
-            </div>
-            <div class="span7 sidebar">
-              <div class="current-container">
-                <h3>Current Map:</h3>
-                <select data-bind="options: maps,
-                                   optionsText: 'id',
-                                   optionsValue: 'id',
-                                   value: currentMapId">
-                </select>
-                <a class="btn success"
-                   data-controls-modal="add-map-dialog"
-                   data-backdrop="true">Add Map</a>
-              </div>
-
-              <table class="bordered-table" data-bind="with: currentMap">
-                <thead>
-                  <tr>
-                    <th>Direction</th>
-                    <th>Map</th>
-                  </tr>
-                </thead>
-                <tbody data-bind="foreach: ['north', 'south', 'east', 'west']">
-                  <tr>
-                    <td data-bind="text: $data"></td>
-                    <td>
-                      <select data-bind="options: $root.maps,
-                                         optionsText: 'id',
-                                         optionsValue: 'id',
-                                         optionsCaption: '---',
-                                         value: $parent.exits[$data]">
-                      </select>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div id="add-map-dialog" class="modal hide fade">
-            <form data-bind="submit: addMap">
-              <div class="modal-header">
-                <a class="close" href="#">x</a>
-                <h3>Add New Map</h3>
-              </div>
-              <div class="modal-body">
-                <fieldset>
-                  <div class="clearfix">
-                    <label for="add-map-id">Map ID</label>
-                    <div class="input">
-                      <input id="add-map-id" type="text">
-                    </div>
-                  </div>
-                  <div class="clearfix">
-                    <label for="add-map-tileset">Tileset</label>
-                    <div class="input">
-                      <select id="add-map-tileset"
-                              data-bind="options: ['overworld', 'interior']">
-                      </select>
-                    </div>
-                  </div>
-                </fieldset>
-
-                <div id="add-map-error" class="alert-message error hide">
-                  <p></p>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button class="btn success" type="submit">Create Map</button>
-              </div>
-            </form>
-          </div>
-        </section>
-
-        <section id="tilemap-editor">
-          <div class="row">
-            <div class="span9 map-container">
-              <canvas data-bind="tileEditor: {click: tileClick, map: currentMap}"></canvas>
-            </div>
-            <div class="span7 sidebar">
-              <div class="current-container">
-                <h3>Current Tile:</h3>
-                <canvas id="current-tile"
-                        data-bind="tile: {tileset: currentTileset,
-                                   tile: currentTile}">
-                </canvas>
-              </div>
-
-              <h3>Palette:</h3>
-              <canvas data-bind="tilePalette: {tileset: currentTileset,
-                                 currentTile: currentTile}">
-              </canvas>
-            </div>
-          </div>
-        </section>
-
-        <section id="terrain-editor">
-          <div class="row">
-            <div class="span9 map-container">
-              <canvas data-bind="overlayTilemapEditor: {map: currentMap,
-                                 overlayMap: currentTerrainMap,
-                                 overlayTileset: 'terrain',
-                                 click: terrainClick}">
-              </canvas>
-            </div>
-            <div class="span7 sidebar">
-              <div class="current-container">
-                <h3>Current Terrain: <span data-bind="text: currentTerrainName"></span></h3>
-                <canvas id="current-terrain"
-                        data-bind="tile: {tileset: terrainTileset,
-                                   tile: currentTerrain}">
-                </canvas>
-                <br />
-                <select data-bind="options: terrain,
-                                   optionsText: 'name',
-                                   optionsValue: 'value',
-                                   value: currentTerrain">
-                </select>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <section id="json-container" class="span16">
-        <div class="row">
-          <h3>JSON Code</h3>
-          <textarea id="json" data-bind="text: game_json"></textarea>
-        </div>
-      </section>
-    </article>
+    <div id="app-container">
+      <aside id="app-sidebar">
+        <ul class="tree-view">
+          <li><h4>Player</h4></li>
+          <li>
+            <h4>Maps</h4>
+            <ul data-bind="foreach: maps">
+              <li data-bind="click: $parent.editMap">
+                <span data-bind="text: id"></span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </aside>
+      <article id="app-main">
+        <div id="workspace"></div>
+      </article>
+    </div>
     <script data-main="js/editor.js" src="js/require.js"></script>
   </body>
 </html>

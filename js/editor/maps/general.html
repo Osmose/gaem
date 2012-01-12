@@ -1,0 +1,28 @@
+<div class="sidebar">
+  <canvas data-bind="tilemap: map, tilemapScale: 1"></canvas>
+</div>
+<div class="main" data-bind="with: map">
+  <h3 data-bind="text: id"></h3>
+  <h4>Exits</h4>
+  <table id="map-exits" class="zebra-striped">
+    <thead>
+      <tr>
+        <th>Direction</th>
+        <th>Map</th>
+      </tr>
+    </thead>
+    <tbody data-bind="foreach: ['north', 'south', 'east', 'west']">
+      <tr>
+        <td data-bind="text: $data"></td>
+        <td>
+          <select data-bind="options: $root.editor.maps,
+                             optionsText: 'id',
+                             optionsValue: 'id',
+                             optionsCaption: '---',
+                             value: $parent.exits[$data]">
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

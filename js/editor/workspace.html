@@ -1,0 +1,12 @@
+<ul class="tabs">
+  <% _.each(tabs, function(tab) { %>
+    <li><a href="#<%= tab.anchor %>"><%= tab.name %></a></li>
+  <% }); %>
+</ul>
+<div class="tab-content">
+  <% _.each(tabs, function(tab) { %>
+    <div id="<%= tab.anchor %>" style="display: none;">
+      <%= tab.content %>
+    </div>
+  <% }); %>
+</div>

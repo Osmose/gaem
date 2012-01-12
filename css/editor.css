@@ -1,36 +1,207 @@
 body {
-    padding-top: 60px;
+    font-family: 'Lucida Grande',Verdana,Arial,sans-serif;
+    font-size: 0.8em;
 }
 
-.map-container {
-    margin-bottom: 20px;
+/* Header */
+.topbar {
+    background-color: #669BE1;
+    background-image: -moz-linear-gradient(center top , #669BE1 0%, #5784BF 100%);
+    border-bottom: 1px solid #153877;
+    box-shadow: 0 2px 2px -2px #666666;
+    color: #FFF;
+    height: 40px;
+    position: relative;
 }
 
-.row .sidebar {
-    border-left: 1px solid #DDD;
-    margin-left: 0px;
-    padding-left: 19px;
+.topbar h1 {
+    color: #FFF;
+    font-size: 24px;
+    line-height: 40px;
+    margin-left: 20px;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
 }
 
-.current-container {
-    background: #DDF4FB;
-    border: 1px solid #C6EDF9;
-    margin-bottom: 10px;
-    padding: 5px;
-    text-align: center;
+.topbar .buttons {
+    float: right;
+    line-height: 40px;
+    margin-right: 20px;
 }
 
-#json {
-    height: 200px;
-    width: 100%;
+/* Layout */
+#app-container {
+    background: url('../assets/img/editor/sidebar_bg.png') repeat;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 40px;
 }
 
-/* Add Map Dialog */
-
-#add-map-dialog form {
-    margin: 0;
+#app-sidebar {
+    float: left;
+    width: 20%;
 }
 
-#add-map-dialog .alert-message {
-    margin-bottom: 0;
+#app-main {
+    background: #E5E9EE;
+    border-left: 1px solid #AFB6BD;
+    bottom: 0;
+    color: #333333;
+    left: 15%;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+/* Sidebar Tree View */
+.tree-view,
+.tree-view ul {
+    padding-left: 10px;
+}
+
+.tree-view li {
+    line-height: 26px;
+}
+
+.tree-view span {
+    display: block;
+
+    /* Highlights entire row */
+    margin-left: -1000px;
+    padding-left: 1010px;
+}
+
+.tree-view span:hover {
+    background: #3875D7;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.tree-view h4 {
+    font-size: 100%;
+    font-weight: bold;
+    line-height: 26px;
+}
+
+/* Tab Container */
+.tabs {
+    background: #C8CBD0;
+    border-bottom: 1px solid #AFB6BD;
+}
+
+.tabs:before,
+.tabs:after {
+    content: "";
+    display: table;
+}
+
+.tabs:after {
+    clear: both;
+    border-left: 1px solid #FFFFFF;
+}
+
+.tabs li {
+    background: -moz-linear-gradient(center top , #F4F8FC, #CED4DB);
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #AFB6BD;
+    float: left;
+}
+
+.tabs li a,
+.tabs li a:visited {
+    color: #333333;
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 10px;
+    text-decoration: none;
+}
+
+.tabs li.active {
+    background: -moz-linear-gradient(center top , #AAAAAA, #CCCCCC);
+    border-left: none;
+}
+
+.tabs li:first-child {
+    border-left: none;
+}
+
+.tab-content {
+    border-top: 1px solid #FFFFFF;
+    padding: 10px;
+}
+
+/* Tables */
+table {
+    border-left: 1px solid #AFB6BD;
+    border-top: 1px solid #AFB6BD;
+}
+
+table th,
+table td {
+    padding: 7px;
+}
+
+table th {
+    background: -moz-linear-gradient(center top , #F4F8FC, #CED4DB);
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #AFB6BD;
+    border-bottom: 1px solid #AFB6BD;
+}
+
+table th:first-child {
+    border-left: none;
+}
+
+table td {
+    background: #FFF;
+    border-right: 1px solid #AFB6BD;
+    border-bottom: 1px solid #AFB6BD;
+}
+
+.zebra-striped tr:nth-child(even) td {
+    background-color: #F1F5FA;
+}
+
+/* Map Editor */
+#maps-general .sidebar {
+    float: left;
+    width: 15%;
+}
+
+#maps-general .sidebar canvas {
+    display: block;
+    margin: auto;
+}
+
+#maps-general .main {
+    margin-left: 15%;
+    padding-left: 10px;
+}
+
+#maps-general .main h3 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+#maps-general .main h4 {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+#map-exits {
+    width: 400px;
+}
+
+#maps-tiles .main {
+    float: left;
+    margin-right: 10px;
+}
+
+#maps-tiles .sidebar {
+
 }

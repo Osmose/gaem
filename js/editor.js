@@ -4,15 +4,24 @@ require.config({
         underscore: 'lib/underscore',
         jquery: 'lib/jquery',
         knockout: 'lib/knockout',
-        text: 'lib/test'
+        text: 'lib/text'
     }
 });
 
-require(['underscore', 'jquery', 'knockout', 'util', 'editor/constants', 'core/loader',
-         'editor/map_model', 'editor/tiles_viewmodel', 'editor/game_viewmodel',
-         'editor/terrain_viewmodel', 'lib/bootstrap-modal'],
-function(_, $, ko, ut, cst, loader, Map, TilesViewModel, GameViewModel,
-         TerrainViewModel) {
+define(function(require) {
+    var _ = require('underscore'),
+        $ = require('jquery'),
+        ko = require('knockout'),
+
+        loader = require('core/loader'),
+        Map = require('editor/map_model'),
+        MapsViewModel = require('editor/maps/viewmodel'),
+
+        workspace_html = require('text!editor/workspace.html'),
+        workspace_tmpl = _.template(workspace_html);
+
+    // Load bindings
+    require('editor/bindings');
 
     // Similar to observableArray, but for tilemaps (array of arrays)
     ko.observableTilemap = function(map) {
@@ -39,35 +48,49 @@ function(_, $, ko, ut, cst, loader, Map, TilesViewModel, GameViewModel,
         }
     };
 
-    function EditorViewModel() {
+    function EditorViewModel(game_data) {
         var self = this;
-        var maps = _.map(loader.get('map'), function(map) {
-            return new Map(map.id, map.tileset, map.width, map.height, map);
-        });
-        self.maps = ko.observableArray(maps);
 
-        self.currentMapId = ko.observable(maps[0].id());
-        self.currentMap = ko.computed(function() {
-             return _.find(self.maps(), function(m) {
-                 return m.id() === self.currentMapId();
-             });
-        });
-
-        self.game_json = ko.computed(function() {
-            return ko.toJSON(self.maps);
-        });
-
-        self.tileClick = function(tx, ty) {
-            self.currentMap.tiles.set(tx, ty, self.currentTile());
+        this.game_data = game_data;
+        this.view_models = {
+            'maps': new MapsViewModel(this)
         };
 
-        // Activate child ViewModels
-        ko.applyBindings(new GameViewModel(self),
-                         $('#game-editor').get(0));
-        ko.applyBindings(new TilesViewModel(self),
-                         $('#tilemap-editor').get(0));
-        ko.applyBindings(new TerrainViewModel(self),
-                         $('#terrain-editor').get(0));
+        // Initialize maps
+        var maps = _.map(game_data.maps, function(map) {
+            return new Map(map.id, map.tileset, map.width, map.height, map);
+        });
+        this.maps = ko.observableArray(maps);
+
+        this.editMap = function(map) {
+            self.view_models.maps.map(map);
+            self.activateViewModel(self.view_models.maps);
+        };
+
+        // Activate the specified view model; insert its HTML into the main
+        // editor panel and bind the view model to it.
+        this.activateViewModel = function(view_model) {
+            var view_model_workspace = workspace_tmpl(view_model.workspace),
+                $workspace = $('#workspace');
+
+            $workspace.empty()
+                .html(view_model_workspace)
+
+                .find('.tabs li:first-child a')
+                .click(); // Activate first tab
+
+            ko.applyBindings(view_model, $workspace.get(0));
+        };
+
+        this.save = function() {
+            var data = {
+                player: self.game_data.player,
+                maps: ko.toJSON(self.maps)
+            };
+
+            // TODO: Make this better
+            alert(JSON.stringify(data));
+        };
     }
 
     $(function() {
@@ -75,16 +98,14 @@ function(_, $, ko, ut, cst, loader, Map, TilesViewModel, GameViewModel,
         loader.loadResources('editor_resources.json');
         loader.onload(function() {
             // Activate tab functionality
-            $('#modes a').click(function() {
-                $('#modes li').removeClass('active');
+            $('.tabs a').live('click', function() {
+                $(this).parents('.tabs').children('li').removeClass('active');
                 $(this).parent('li').addClass('active');
-                $('.editors section').hide();
+                $('.tab-content > div').hide();
                 $(this.hash).show();
             });
-            $('#modes .active a').click();
 
-            ko.applyBindings(new EditorViewModel(),
-                             $('#json-container').get(0));
+            ko.applyBindings(new EditorViewModel(loader.get('gamedata')));
         });
     });
 });
