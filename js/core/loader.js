@@ -1,4 +1,9 @@
-define(['underscore', 'jquery'], function(_, $) {
+define(function(require) {
+    var _ = require('underscore'),
+        $ = require('jquery'),
+
+        Tileset = require('core/tileset');
+
     // Loads resources and handles callbacks to trigger when loading is
     // complete.
     function Loader(path) {
@@ -109,32 +114,6 @@ define(['underscore', 'jquery'], function(_, $) {
             }
 
             return undefined;
-        }
-    });
-
-    // Handles grabbing specific tiles from a tileset
-    function Tileset(img, tileWidth, tileHeight, xGap, yGap, anim) {
-        _.extend(this, {
-            img: img,
-            tw: tileWidth,
-            th: tileHeight,
-            xGap: xGap,
-            yGap: yGap,
-            img_tw: Math.floor(img.width / (tileWidth + xGap)),
-            img_th: Math.floor(img.height / (tileHeight + yGap)),
-            anim: anim
-        });
-    }
-
-    _.extend(Tileset.prototype, {
-        drawTile: function(ctx, tilenum, x, y) {
-            var ty = Math.floor(tilenum / this.img_tw),
-                tx = tilenum % this.img_tw;
-
-            ctx.drawImage(this.img,
-                          (tx * this.tw) + (tx * this.xGap),
-                          (ty * this.th) + (ty * this.yGap),
-                          this.tw, this.th, x, y, this.tw, this.th);
         }
     });
 

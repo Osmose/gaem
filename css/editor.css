@@ -3,6 +3,17 @@ body {
     font-size: 0.8em;
 }
 
+h3 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+h4 {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
 /* Header */
 .topbar {
     background-color: #669BE1;
@@ -49,7 +60,6 @@ body {
     bottom: 0;
     color: #333333;
     left: 15%;
-    overflow: auto;
     position: absolute;
     right: 0;
     top: 0;
@@ -84,6 +94,7 @@ body {
     font-size: 100%;
     font-weight: bold;
     line-height: 26px;
+    margin: 0;
 }
 
 /* Tab Container */
@@ -131,7 +142,12 @@ body {
 
 .tab-content {
     border-top: 1px solid #FFFFFF;
-    padding: 10px;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 41px;
 }
 
 /* Tables */
@@ -166,7 +182,40 @@ table td {
     background-color: #F1F5FA;
 }
 
+/* Icon List Select */
+.icon-list-select li {
+    float: left;
+    margin-right: 5px;
+}
+
+.icon-list-select label {
+    cursor: pointer;
+    display: block;
+    height: 50px;
+    padding: 5px 10px;
+    width: 130px;
+}
+
+.icon-list-select canvas {
+    border: 1px dashed #999999;
+    vertical-align: middle;
+}
+
+.icon-list-select label.selected {
+    background-color: #C8CBD0;
+    border: 1px solid #AFB6BD;
+    border-radius: 3px;
+}
+
+.icon-list-select input {
+    display: none;
+}
+
 /* Map Editor */
+#maps-general {
+    margin-top: 10px;
+}
+
 #maps-general .sidebar {
     float: left;
     width: 15%;
@@ -182,26 +231,33 @@ table td {
     padding-left: 10px;
 }
 
-#maps-general .main h3 {
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: 16px;
-}
-
-#maps-general .main h4 {
-    font-size: 22px;
-    margin-bottom: 12px;
-}
-
 #map-exits {
     width: 400px;
 }
 
-#maps-tiles .main {
-    float: left;
-    margin-right: 10px;
+.tilemap-editor {
+    height: 100%;
 }
 
-#maps-tiles .sidebar {
+.tilemap-editor .main {
+    background-color: #222222;
+    border-right: 1px solid #FFFFFF;
+    float: left;
+    height: 100%;
+    position: relative;
+    width: 40%;
+}
 
+.tilemap-editor .main canvas {
+    display: block;
+    left: 50%;
+    margin-left: -240px;
+    margin-top: -192px;
+    position: absolute;
+    top: 50%;
+}
+
+.tilemap-editor .sidebar {
+    margin-left: 40%;
+    padding: 10px;
 }

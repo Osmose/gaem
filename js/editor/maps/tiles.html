@@ -1,6 +1,6 @@
 <div class="main">
-  <canvas class="map-editor" data-bind="tilemap: map, tilemapScale: 3"></canvas>
+  <canvas class="map-editor" data-bind="tilemap: map, scale: 3, paint: paint_tile"></canvas>
 </div>
 <div class="sidebar">
-  <canvas data-bind="image: tileset_img"></canvas>
+  <canvas data-bind="image: tileset_img, scale: 2, overlay: draw_palette_box, click: change_tile"></canvas>
 </div>

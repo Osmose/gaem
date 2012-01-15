@@ -1,4 +1,7 @@
-define(['underscore'], function(_) {
+define(function(require) {
+    var _ = require('underscore'),
+        $ = require('jquery');
+    
     return {
         LEFT: 4, WEST: 4,
         RIGHT: 1, EAST: 1,
@@ -95,6 +98,16 @@ define(['underscore'], function(_) {
                     fy += fontTileset.th;
                 }
             }
+        },
+
+        // Gets the position of the mouse in tiles from a mouse event handler.
+        mouseTilePos: function(elem, event, tw, th) {
+            var offset = $(elem).offset(),
+                x = event.pageX - offset.left,
+                y = event.pageY - offset.top,
+                tx = Math.floor(x / tw),
+                ty = Math.floor(y / th);
+            return {tx: tx, ty: ty};
         }
     };
 });

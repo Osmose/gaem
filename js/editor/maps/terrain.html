@@ -1,0 +1,19 @@
+<div class="main">
+  <canvas class="map-editor" data-bind="tilemap: map,
+                                        scale: 3,
+                                        overlay: draw_terrain,
+                                        paint: paint_terrain"></canvas>
+</div>
+<div class="sidebar">
+  <h4>Terrain Types</h4>
+  <ul class="icon-list-select" data-bind="foreach: terrain_types">
+    <li>
+      <label data-bind="css: { selected: $parent.current_terrain() == value }">
+        <input type="radio" name="maps-terrain" data-bind="attr: {value: value},
+                                                           checked: $parent.current_terrain">
+        <canvas data-bind="image: canvas, scale: 3"></canvas>
+        <span data-bind="text: name"></span>
+      </label>
+    </li>
+  </ul>
+</div>

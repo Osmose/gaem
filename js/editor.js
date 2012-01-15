@@ -23,31 +23,6 @@ define(function(require) {
     // Load bindings
     require('editor/bindings');
 
-    // Similar to observableArray, but for tilemaps (array of arrays)
-    ko.observableTilemap = function(map) {
-        // TODO: Data validation
-        var result = new ko.observable(map);
-        ko.utils.extend(result, ko.observableTilemap.fn);
-
-        ko.exportProperty(result, 'get', result.get);
-        ko.exportProperty(result, 'set', result.set);
-
-        return result;
-    };
-
-    ko.observableTilemap.fn = {
-        get: function(tx, ty) {
-            var map = this();
-            return map[ty][tx];
-        },
-        set: function(tx, ty, tile) {
-            var map = this();
-            this.valueWillMutate();
-            map[ty][tx] = tile;
-            this.valueHasMutated();
-        }
-    };
-
     function EditorViewModel(game_data) {
         var self = this;
 
