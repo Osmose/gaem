@@ -1,5 +1,6 @@
 {
     "player": {
+        "start_map": "base",
         "x": 16,
         "y": 16,
         "tileset_id": "entities",

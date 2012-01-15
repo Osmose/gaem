@@ -14,8 +14,10 @@ define(function(require) {
         ko = require('knockout'),
 
         loader = require('core/loader'),
-        Map = require('editor/map_model'),
+        Map = require('editor/models/map'),
         MapsViewModel = require('editor/maps/viewmodel'),
+        Player = require('editor/models/player'),
+        PlayerViewModel = require('editor/player/viewmodel'),
 
         workspace_html = require('text!editor/workspace.html'),
         workspace_tmpl = _.template(workspace_html);
@@ -25,21 +27,27 @@ define(function(require) {
 
     function EditorViewModel(game_data) {
         var self = this;
-
         this.game_data = game_data;
-        this.view_models = {
-            'maps': new MapsViewModel(this)
-        };
 
         // Initialize maps
         var maps = _.map(game_data.maps, function(map) {
             return new Map(map.id, map.tileset, map.width, map.height, map);
         });
         this.maps = ko.observableArray(maps);
+        this.player = new Player(game_data.player);
+
+        this.view_models = {
+            'maps': new MapsViewModel(this),
+            'player': new PlayerViewModel(this)
+        };
 
         this.editMap = function(map) {
             self.view_models.maps.map(map);
             self.activateViewModel(self.view_models.maps);
+        };
+
+        this.editPlayer = function() {
+            self.activateViewModel(self.view_models.player);
         };
 
         // Activate the specified view model; insert its HTML into the main
@@ -59,12 +67,12 @@ define(function(require) {
 
         this.save = function() {
             var data = {
-                player: self.game_data.player,
-                maps: ko.toJSON(self.maps)
+                player: self.player,
+                maps: self.maps
             };
 
             // TODO: Make this better
-            alert(JSON.stringify(data));
+            alert(JSON.stringify(ko.toJSON(data)));
         };
     }
 

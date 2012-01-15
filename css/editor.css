@@ -41,7 +41,6 @@ h4 {
 
 /* Layout */
 #app-container {
-    background: url('../assets/img/editor/sidebar_bg.png') repeat;
     bottom: 0;
     left: 0;
     position: absolute;
@@ -50,8 +49,17 @@ h4 {
 }
 
 #app-sidebar {
-    float: left;
-    width: 20%;
+    background: url('../assets/img/editor/sidebar_bg.png') repeat;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    position: absolute;
+    right: 85%;
+    top: 0;
+}
+
+#app-sidebar > .tree-view {
+    background: url('../assets/img/editor/sidebar_bg.png') repeat;
 }
 
 #app-main {
@@ -259,5 +267,10 @@ table td {
 
 .tilemap-editor .sidebar {
     margin-left: 40%;
+    padding: 10px;
+}
+
+/* Player Editor */
+#player-general {
     padding: 10px;
 }

@@ -16,7 +16,14 @@
     <div id="app-container">
       <aside id="app-sidebar">
         <ul class="tree-view">
-          <li><h4>Player</h4></li>
+          <li>
+            <h4>Player</h4>
+            <ul>
+              <li data-bind="click: editPlayer">
+                <span>Settings</span>
+              </li>
+            </ul>
+          </li>
           <li>
             <h4>Maps</h4>
             <ul data-bind="foreach: maps">

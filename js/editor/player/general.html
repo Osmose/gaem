@@ -1,0 +1,23 @@
+<h3>General Player Settings</h3>
+<table class="zebra-striped">
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Initial Map</td>
+      <td>
+        <select data-bind="options: editor.maps,
+                           optionsText: 'id',
+                           optionsValue: 'id',
+                           value: player.start_map">
+        </select>
+      </td>
+    </tr>
+    <tr><td>Initial X</td><td><input type="text" data-bind="value: player.x"></td></tr>
+    <tr><td>Initial Y</td><td><input type="text" data-bind="value: player.y"></td></tr>
+  </tbody>
+</table>
