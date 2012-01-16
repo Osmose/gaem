@@ -27,23 +27,7 @@ define(function(require) {
         /*******
          General
          *******/
-        // Icon for the current entity class.
-        this.ecls_icon = ko.computed(function() {
-            var ecls = self.ecls();
-            if (ecls) {
-                var tileset = loader.get(ecls.tileset_id()),
-                    tilenum = ecls.sprites.get(ecls.sprite_id());
-
-                // Pick first frame of animation if needed.
-                if (_.isArray(tilenum)) {
-                    tilenum = tilenum[0];
-                }
-
-                return tileset.getTileCanvas(tilenum);
-            }
-
-            return undefined;
-        });
+        // None, yet.
 
         /********
          Handlers

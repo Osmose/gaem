@@ -1,0 +1,28 @@
+<div class="main">
+  <canvas class="map-editor" data-bind="tilemap: map,
+                                        scale: 3,
+                                        overlay: draw_entities"></canvas>
+</div>
+<div class="sidebar">
+  <table class="zebra-striped">
+    <thead>
+      <tr>
+        <th>Entity Class</th>
+        <th>X</th>
+        <th>Y</th>
+      </tr>
+    </thead>
+    <tbody data-bind="foreach: map().entities">
+      <tr>
+        <td>
+          <select data-bind="options: $root.editor.entity_classes.keys,
+                             value: $data.entity_class">
+          </select>
+        </td>
+        <td><input type="number" data-bind="value: $data.x"></td>
+        <td><input type="number" data-bind="value: $data.y"></td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="btn success" data-bind="click: addEntity">Add Entity</button>
+</div>

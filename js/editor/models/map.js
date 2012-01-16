@@ -1,30 +1,11 @@
-define(['underscore', 'knockout', 'util', 'core/loader'],
-function(_, ko, ut, loader) {
-    
-    // Similar to observableArray, but for tilemaps (array of arrays)
-    ko.observableTilemap = function(map) {
-        // TODO: Data validation
-        var result = new ko.observable(map);
-        ko.utils.extend(result, ko.observableTilemap.fn);
+define(function(require) {
+    var _ = require('underscore'),
+        ko = require('knockout'),
 
-        ko.exportProperty(result, 'get', result.get);
-        ko.exportProperty(result, 'set', result.set);
+        loader = require('core/loader'),
+        ut = require('util'),
 
-        return result;
-    };
-
-    ko.observableTilemap.fn = {
-        get: function(tx, ty) {
-            var map = this();
-            return map[ty][tx];
-        },
-        set: function(tx, ty, tile) {
-            var map = this();
-            this.valueWillMutate();
-            map[ty][tx] = tile;
-            this.valueHasMutated();
-        }
-    };
+        Entity = require('editor/models/entity');
 
     function buildMap(width, height) {
         var map = new Array(height);  // Constructor lets us specify width
@@ -40,6 +21,7 @@ function(_, ko, ut, loader) {
 
     // Model for tilemaps
     function Map(id, tileset, width, height, data) {
+        var self = this;
         _.extend(this, {
             id: ko.observable(id),
             tileset: ko.observable(tileset),
@@ -55,9 +37,14 @@ function(_, ko, ut, loader) {
                 east: ko.observable(ut.oget(data.exits, 'east')),
                 west: ko.observable(ut.oget(data.exits, 'west'))
             },
+            entities: ko.observableArray(),
             doors: ut.oget(data, 'doors', []),
             width: width,
             height: height
+        });
+
+        _.each(data.entities, function(data) {
+            self.entities.push(new Entity(data));
         });
     }
 

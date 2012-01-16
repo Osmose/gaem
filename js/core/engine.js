@@ -155,11 +155,7 @@ function(_, cst, util, loader, KeyboardControls, TilemapCollection, Transition,
             this.tilemap_collection = new TilemapCollection(this, data.maps);
             this.player = new Player(this, data.player);
             this.hud = new HUD(this.player);
-
-            this.entity_classes = {};
-            _.each(data.entity_classes, function(entity_class) {
-                self.entity_classes[entity_class.id] = entity_class;
-            });
+            this.entity_classes = data.entity_classes;
         },
 
         // Start the game loop.

@@ -6,9 +6,12 @@ define(function(require) {
         loader = require('core/loader'),
         ut = require('util'),
 
+        Entity = require('editor/models/entity'),
+
         maps_general = require('text!./general.html'),
         maps_tiles = require('text!./tiles.html'),
-        maps_terrain = require('text!./terrain.html');
+        maps_terrain = require('text!./terrain.html'),
+        maps_entities = require('text!./entities.html');
 
     function MapsViewModel(editor) {
         var self = this;
@@ -25,7 +28,9 @@ define(function(require) {
                 {name: 'Tiles', anchor: 'maps-tiles',
                  class_attr: 'tilemap-editor', content: maps_tiles},
                 {name: 'Terrain', anchor: 'maps-terrain',
-                 class_attr: 'tilemap-editor', content: maps_terrain}
+                 class_attr: 'tilemap-editor', content: maps_terrain},
+                {name: 'Entities', anchor: 'maps-entities',
+                 class_attr: 'tilemap-editor', content: maps_entities}
             ]
         };
 
@@ -112,6 +117,27 @@ define(function(require) {
             ut.renderMap(ctx, map.terrain(), terrain_tileset,
                          map.width, map.height);
             ctx.restore();
+        };
+
+        /*************
+         Entity Editor
+         *************/
+        this.addEntity = function() {
+            self.map().entities.push(new Entity());
+        };
+
+        this.draw_entities = function(canvas) {
+            var ctx = canvas.getContext('2d'),
+                entities = self.map().entities(),
+                entity_classes = self.editor.entity_classes();
+
+            _.each(entities, function(entity) {
+                var ecls_id = entity.entity_class();
+                if (ecls_id in entity_classes) {
+                    var icon = entity_classes[ecls_id].icon();
+                    ctx.drawImage(icon, entity.x(), entity.y());
+                }
+            });
         };
     }
 

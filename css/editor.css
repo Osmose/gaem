@@ -162,6 +162,7 @@ h4 {
 table {
     border-left: 1px solid #AFB6BD;
     border-top: 1px solid #AFB6BD;
+    margin-bottom: 10px;
 }
 
 table th,

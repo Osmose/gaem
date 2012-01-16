@@ -36,7 +36,7 @@
 
           <li>
             <h4>Entity Classes</h4>
-            <ul data-bind="foreach: entity_classes">
+            <ul data-bind="foreach: entity_classes.values">
               <li data-bind="click: $parent.editEntityClass">
                 <span data-bind="text: id"></span>
               </li>

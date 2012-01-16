@@ -6,7 +6,8 @@ require.config({
         knockout: 'lib/knockout',
         text: 'lib/text',
         ace: 'lib/ace'
-    }
+    },
+    deps: ['editor/bindings', 'editor/observables']
 });
 
 define(function(require) {
@@ -25,9 +26,6 @@ define(function(require) {
         workspace_html = require('text!editor/workspace.html'),
         workspace_tmpl = _.template(workspace_html);
 
-    // Load bindings
-    require('editor/bindings');
-
     function EditorViewModel(game_data) {
         var self = this;
         this.game_data = game_data;
@@ -38,10 +36,10 @@ define(function(require) {
         });
         this.maps = ko.observableArray(maps);
 
-        var entity_classes = _.map(game_data.entity_classes, function(data) {
-            return new EntityClass(data);
+        this.entity_classes = ko.observableObject();
+        _.each(game_data.entity_classes, function(data, key) {
+            self.entity_classes.set(key, new EntityClass(key, data));
         });
-        this.entity_classes = ko.observableArray(entity_classes);
 
         this.player = new Player(game_data.player);
 
@@ -83,11 +81,17 @@ define(function(require) {
             var data = {
                 player: self.player,
                 maps: self.maps,
-                entity_classes: self.entity_classes
+                entity_classes: {}
             };
 
+            // Serialize entities seperately due to issues with
+            // icon attribute.
+            _.each(self.entity_classes(), function(entity, id) {
+                data.entity_classes[id] = entity.toJS();
+            });
+
             // TODO: Make this better
-            alert(JSON.stringify(ko.toJSON(data)));
+            alert(ko.toJSON(data));
         };
     }
 
