@@ -24,10 +24,20 @@
               </li>
             </ul>
           </li>
+
           <li>
             <h4>Maps</h4>
             <ul data-bind="foreach: maps">
               <li data-bind="click: $parent.editMap">
+                <span data-bind="text: id"></span>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <h4>Entity Classes</h4>
+            <ul data-bind="foreach: entity_classes">
+              <li data-bind="click: $parent.editEntityClass">
                 <span data-bind="text: id"></span>
               </li>
             </ul>

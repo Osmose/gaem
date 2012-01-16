@@ -4,7 +4,8 @@ require.config({
         underscore: 'lib/underscore',
         jquery: 'lib/jquery',
         knockout: 'lib/knockout',
-        text: 'lib/text'
+        text: 'lib/text',
+        ace: 'lib/ace'
     }
 });
 
@@ -14,6 +15,8 @@ define(function(require) {
         ko = require('knockout'),
 
         loader = require('core/loader'),
+        EntityClass = require('editor/models/entity_class'),
+        EntityClassViewModel = require('editor/entity_classes/viewmodel'),
         Map = require('editor/models/map'),
         MapsViewModel = require('editor/maps/viewmodel'),
         Player = require('editor/models/player'),
@@ -29,16 +32,23 @@ define(function(require) {
         var self = this;
         this.game_data = game_data;
 
-        // Initialize maps
+        // Initialize game data
         var maps = _.map(game_data.maps, function(map) {
             return new Map(map.id, map.tileset, map.width, map.height, map);
         });
         this.maps = ko.observableArray(maps);
+
+        var entity_classes = _.map(game_data.entity_classes, function(data) {
+            return new EntityClass(data);
+        });
+        this.entity_classes = ko.observableArray(entity_classes);
+
         this.player = new Player(game_data.player);
 
         this.view_models = {
             'maps': new MapsViewModel(this),
-            'player': new PlayerViewModel(this)
+            'player': new PlayerViewModel(this),
+            'entity_classes': new EntityClassViewModel(this)
         };
 
         this.editMap = function(map) {
@@ -50,6 +60,11 @@ define(function(require) {
             self.activateViewModel(self.view_models.player);
         };
 
+        this.editEntityClass = function(entity_class) {
+            self.view_models.entity_classes.ecls(entity_class);
+            self.activateViewModel(self.view_models.entity_classes);
+        };
+
         // Activate the specified view model; insert its HTML into the main
         // editor panel and bind the view model to it.
         this.activateViewModel = function(view_model) {
@@ -58,7 +73,6 @@ define(function(require) {
 
             $workspace.empty()
                 .html(view_model_workspace)
-
                 .find('.tabs li:first-child a')
                 .click(); // Activate first tab
 
@@ -68,7 +82,8 @@ define(function(require) {
         this.save = function() {
             var data = {
                 player: self.player,
-                maps: self.maps
+                maps: self.maps,
+                entity_classes: self.entity_classes
             };
 
             // TODO: Make this better
@@ -77,6 +92,9 @@ define(function(require) {
     }
 
     $(function() {
+        $(window).resize(function() {
+            alert('resize!');
+        });
         loader.loadResources('resources.json');
         loader.loadResources('editor_resources.json');
         loader.onload(function() {
@@ -85,7 +103,7 @@ define(function(require) {
                 $(this).parents('.tabs').children('li').removeClass('active');
                 $(this).parent('li').addClass('active');
                 $('.tab-content > div').hide();
-                $(this.hash).show();
+                $(this.hash).show().trigger('tab-show');
             });
 
             ko.applyBindings(new EditorViewModel(loader.get('gamedata')));

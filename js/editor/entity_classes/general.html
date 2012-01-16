@@ -1,0 +1,24 @@
+<h3>
+  <canvas data-bind="image: ecls_icon, scale: 3"></canvas>
+  <!-- ko with: ecls -->
+    <span data-bind="text: id"></span>
+  <!-- /ko -->
+</h3>
+
+<h4>General Settings</h4>
+<table class="zebra-striped" data-bind="with: ecls">
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Initial Sprite</td>
+      <td>
+        <select data-bind="options: sprites.keys, value: sprite_id"></select>
+      </td>
+    </tr>
+  </tbody>
+</table>

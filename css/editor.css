@@ -274,3 +274,22 @@ table td {
 #player-general {
     padding: 10px;
 }
+
+/* Entity Class Editor */
+#ecls-general,
+#ecls-handlers{
+    padding: 10px;
+}
+
+#ecls-general h3 canvas {
+    vertical-align: middle;
+}
+
+#handler-code {
+    border-top: 1px solid #777777;
+    bottom: 0;
+    left: 0;
+    display: absolute;
+    top: 40px;
+    right: 0;
+}

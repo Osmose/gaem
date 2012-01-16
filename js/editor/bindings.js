@@ -1,9 +1,11 @@
 define(function(require) {
     var $ = require('jquery'),
         ko = require('knockout'),
-        ut = require('util'),
+        ace = require('ace/ace'),
 
+        ut = require('util'),
         cst = require('./constants'),
+
         loader = require('core/loader');
 
     // Binding for drawing a tilemap on a canvas
@@ -45,7 +47,7 @@ define(function(require) {
             ctx.drawImage(img, 0, 0);
 
             if ('overlay' in allBindings) {
-                allBindings['overlay'](canvas);
+                allBindings.overlay(canvas);
             }
         }
     };
@@ -66,6 +68,43 @@ define(function(require) {
             }).mouseup(function(e) {
                 drawing = false;
             });
+        }
+    };
+
+    // Activates the ace code editor on an element.
+    require('ace/theme/monokai');
+    ko.bindingHandlers.ace = {
+        modes: {
+            javascript: require("ace/mode/javascript").Mode
+        },
+        init: function(elem, modeAccessor, allBindingsAccessor) {
+            var editor = ace.edit(elem),
+                mode = modeAccessor(),
+                modes = ko.bindingHandlers.ace.modes,
+                allBindings = allBindingsAccessor();
+
+            $(elem).data('editor', editor);
+            editor.getSession().setMode(new modes[mode]());
+            editor.getSession().setUseWorker(false);
+            editor.setHighlightActiveLine(false);
+            editor.setTheme('ace/theme/monokai');
+
+            // Editor should resize when the tab it is contained in is shown.
+            $(elem).parent('.tab').bind('tab-show', function() {
+                editor.resize();
+            });
+
+            if ('aceValue' in allBindings) {
+                editor.getSession().setValue(allBindings.aceValue());
+                allBindings.aceValue.subscribe(function(value) {
+                    if (editor.getSession().getValue() !== value) {
+                        editor.getSession().setValue(value);
+                    }
+                });
+                editor.getSession().on('change', function() {
+                    allBindings.aceValue(editor.getSession().getValue());
+                });
+            }
         }
     };
 });

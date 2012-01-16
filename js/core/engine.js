@@ -151,11 +151,15 @@ function(_, cst, util, loader, KeyboardControls, TilemapCollection, Transition,
 
         // Load game data, which includes map and entity information.
         loadGameData: function(data) {
+            var self = this;
             this.tilemap_collection = new TilemapCollection(this, data.maps);
             this.player = new Player(this, data.player);
             this.hud = new HUD(this.player);
 
-            this.entity_classes = data.entity_classes;
+            this.entity_classes = {};
+            _.each(data.entity_classes, function(entity_class) {
+                self.entity_classes[entity_class.id] = entity_class;
+            });
         },
 
         // Start the game loop.

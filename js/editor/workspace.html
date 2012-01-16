@@ -5,7 +5,7 @@
 </ul>
 <div class="tab-content">
   <% _.each(tabs, function(tab) { %>
-    <div id="<%= tab.anchor %>" class="<%= tab.class_attr %>" style="display: none;">
+    <div id="<%= tab.anchor %>" class="tab <%= tab.class_attr %>" style="display: none;">
       <%= tab.content %>
     </div>
   <% }); %>
