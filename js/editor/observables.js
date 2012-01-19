@@ -56,4 +56,6 @@ define(function(require) {
             this.valueHasMutated();
         }
     };
+
+    // Observable for keeping up with a model attribute that may change.
 });

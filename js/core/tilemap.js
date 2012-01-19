@@ -13,7 +13,7 @@ function(_, loader, util, EntityInstance) {
         if ('entities' in map_data) {
             _.each(map_data.entities, function(data) {
                 // Augment parameters with those defined by the entity class.
-                _.defaults(data, engine.entity_classes[data.entity_class]);
+                _.defaults(data, engine.entity_classes[data.entity_class_id]);
                 self.entities.push(new EntityInstance(engine, data));
             });
         }

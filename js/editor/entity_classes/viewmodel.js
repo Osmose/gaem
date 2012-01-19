@@ -22,7 +22,7 @@ define(function(require) {
             ]
         };
 
-        this.handlers = ['interact'];
+        this.handlers = ['interact', 'tick'];
 
         /*******
          General

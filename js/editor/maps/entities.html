@@ -15,8 +15,8 @@
     <tbody data-bind="foreach: map().entities">
       <tr>
         <td>
-          <select data-bind="options: $root.editor.entity_classes.keys,
-                             value: $data.entity_class">
+          <select data-bind="options: $root.editor.entity_class_ids,
+                             value: $data.entity_class_id">
           </select>
         </td>
         <td><input type="number" data-bind="value: $data.x"></td>

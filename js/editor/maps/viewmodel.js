@@ -123,7 +123,7 @@ define(function(require) {
          Entity Editor
          *************/
         this.addEntity = function() {
-            self.map().entities.push(new Entity());
+            self.map().entities.push(new Entity(editor));
         };
 
         this.draw_entities = function(canvas) {
@@ -132,10 +132,9 @@ define(function(require) {
                 entity_classes = self.editor.entity_classes();
 
             _.each(entities, function(entity) {
-                var ecls_id = entity.entity_class();
-                if (ecls_id in entity_classes) {
-                    var icon = entity_classes[ecls_id].icon();
-                    ctx.drawImage(icon, entity.x(), entity.y());
+                var ecls = entity.entity_class();
+                if (ecls) {
+                    ctx.drawImage(ecls.icon(), entity.x(), entity.y());
                 }
             });
         };

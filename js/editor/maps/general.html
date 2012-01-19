@@ -3,6 +3,23 @@
 </div>
 <div class="main" data-bind="with: map">
   <h3 data-bind="text: id"></h3>
+
+  <h4>General</h4>
+  <table class="zebra-striped">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ID</td>
+        <td><input type="text" data-bind="value: id"></td>
+      </tr>
+    </tbody>
+  </table>
+
   <h4>Exits</h4>
   <table id="map-exits" class="zebra-striped">
     <thead>

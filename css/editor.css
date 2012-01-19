@@ -99,10 +99,33 @@ h4 {
 }
 
 .tree-view h4 {
+    cursor: default;
     font-size: 100%;
     font-weight: bold;
     line-height: 26px;
     margin: 0;
+}
+
+.tree-view h4 span {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+.tree-view h4 span:hover {
+    background: none;
+    color: inherit;
+    cursor: inherit;
+}
+
+.tree-view h4 img {
+    cursor: pointer;
+    opacity: 0.6;
+    vertical-align: text-top;
+}
+
+.tree-view h4 img:hover {
+    opacity: 1;
 }
 
 /* Tab Container */

@@ -1,21 +1,8 @@
-require.config({
-    paths: {
-        ICanHaz: 'lib/ICanHaz',
-        underscore: 'lib/underscore',
-        jquery: 'lib/jquery',
-        knockout: 'lib/knockout',
-        text: 'lib/text',
-        ace: 'lib/ace'
-    },
-    deps: ['editor/bindings', 'editor/observables']
-});
-
 define(function(require) {
     var _ = require('underscore'),
         $ = require('jquery'),
         ko = require('knockout'),
 
-        loader = require('core/loader'),
         EntityClass = require('editor/models/entity_class'),
         EntityClassViewModel = require('editor/entity_classes/viewmodel'),
         Map = require('editor/models/map'),
@@ -26,27 +13,43 @@ define(function(require) {
         workspace_html = require('text!editor/workspace.html'),
         workspace_tmpl = _.template(workspace_html);
 
-    function EditorViewModel(game_data) {
+    function EditorViewModel() {
         var self = this;
-        this.game_data = game_data;
 
-        // Initialize game data
-        var maps = _.map(game_data.maps, function(map) {
-            return new Map(map.id, map.tileset, map.width, map.height, map);
-        });
-        this.maps = ko.observableArray(maps);
+        this.loadGameData = function(game_data) {
+            this.game_data = game_data;
 
-        this.entity_classes = ko.observableObject();
-        _.each(game_data.entity_classes, function(data, key) {
-            self.entity_classes.set(key, new EntityClass(key, data));
-        });
+            // Initialize game data
+            // Order matters: Maps depend on entity classes.
+            this.entity_classes = ko.observableArray();
+            _.each(game_data.entity_classes, function(data) {
+                self.entity_classes.push(new EntityClass(data));
+            });
 
-        this.player = new Player(game_data.player);
+            var maps = _.map(game_data.maps, function(map) {
+                return new Map(map.id, map.tileset, map.width, map.height, map);
+            });
+            this.maps = ko.observableArray(maps);
 
-        this.view_models = {
-            'maps': new MapsViewModel(this),
-            'player': new PlayerViewModel(this),
-            'entity_classes': new EntityClassViewModel(this)
+            this.entity_class_ids = ko.computed(function() {
+                return _.map(self.entity_classes(), function(ecls) {
+                    return ecls.id;
+                });
+            });
+
+            this.player = new Player(game_data.player);
+
+            this.view_models = {
+                'maps': new MapsViewModel(this),
+                'player': new PlayerViewModel(this),
+                'entity_classes': new EntityClassViewModel(this)
+            };
+        };
+
+        this.getEntityClass = function(id) {
+            return _.find(self.entity_classes(), function(ecls) {
+                return ecls.id() === id;
+            });
         };
 
         this.editMap = function(map) {
@@ -56,6 +59,20 @@ define(function(require) {
 
         this.editPlayer = function() {
             self.activateViewModel(self.view_models.player);
+        };
+
+        this.addEntityClass = function() {
+            var entity_classes = self.entity_classes(),
+                id = 'new_entity',
+                k = 1;
+            while (id in entity_classes) {
+                id = 'new_entity' + k;
+                k++;
+            }
+
+            var ecls = new EntityClass(id);
+            self.entity_classes.set(id, ecls);
+            self.editEntityClass(ecls);
         };
 
         this.editEntityClass = function(entity_class) {
@@ -95,22 +112,6 @@ define(function(require) {
         };
     }
 
-    $(function() {
-        $(window).resize(function() {
-            alert('resize!');
-        });
-        loader.loadResources('resources.json');
-        loader.loadResources('editor_resources.json');
-        loader.onload(function() {
-            // Activate tab functionality
-            $('.tabs a').live('click', function() {
-                $(this).parents('.tabs').children('li').removeClass('active');
-                $(this).parent('li').addClass('active');
-                $('.tab-content > div').hide();
-                $(this.hash).show().trigger('tab-show');
-            });
-
-            ko.applyBindings(new EditorViewModel(loader.get('gamedata')));
-        });
-    });
+    // Singleton! (aka global!)
+    return new EditorViewModel();
 });

@@ -35,8 +35,12 @@
           </li>
 
           <li>
-            <h4>Entity Classes</h4>
-            <ul data-bind="foreach: entity_classes.values">
+            <h4>
+              <span>Entity Classes</span>
+              <img src="assets/img/editor/add.png" title="Add New Entity Class"
+                   data-bind="click: addEntityClass">
+            </h4>
+            <ul data-bind="foreach: entity_classes">
               <li data-bind="click: $parent.editEntityClass">
                 <span data-bind="text: id"></span>
               </li>
@@ -48,6 +52,6 @@
         <div id="workspace"></div>
       </article>
     </div>
-    <script data-main="js/editor.js" src="js/require.js"></script>
+    <script data-main="js/start_editor.js" src="js/require.js"></script>
   </body>
 </html>
