@@ -28,5 +28,13 @@ define(function(require) {
         });
     }
 
+    _.extend(Entity.prototype, {
+        toJSON: ut.buildToJSON([
+            'entity_class_id',
+            'x',
+            'y'
+        ])
+    });
+
     return Entity;
 });

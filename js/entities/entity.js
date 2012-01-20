@@ -3,7 +3,6 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, ut) {
         var self = this;
 
         _.defaults(data, {
-            id: _.uniqueId(),
             x: 0,
             y: 0,
             tileset_id: null,
@@ -13,6 +12,7 @@ define(['underscore', 'core/loader', 'util'], function(_, loader, ut) {
         });
 
         _.extend(this, data, {
+            id: _.uniqueId(),
             engine: engine,
             sprite_delay: null,
             sprite_tile: null,

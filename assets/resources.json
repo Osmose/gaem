@@ -26,6 +26,14 @@
             "yGap": 0,
             "anim": {}
         },
+        "small_entities": {
+            "path": "img/small_entities.png",
+            "tileWidth": 8,
+            "tileHeight": 8,
+            "xGap": 0,
+            "yGap": 0,
+            "anim": {}
+        },
         "hearts": {
             "path": "img/hearts.png",
             "tileWidth": 8,

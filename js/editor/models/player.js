@@ -1,6 +1,8 @@
 define(function(require) {
     var _ = require('underscore'),
-        ko = require('knockout');
+        ko = require('knockout'),
+
+        ut = require('util');
 
     // Model for player
     function Player(data) {
@@ -14,6 +16,18 @@ define(function(require) {
             sprites: data.sprites
         });
     }
+
+    _.extend(Player.prototype, {
+        toJSON: ut.buildToJSON([
+            'start_map',
+            'x',
+            'y',
+            'tileset_id',
+            'sprite_id',
+            'bounding_box',
+            'sprites'
+        ])
+    });
 
     return Player;
 });

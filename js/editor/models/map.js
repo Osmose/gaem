@@ -60,7 +60,19 @@ define(function(require) {
         render: function(ctx) {
             var tileset = loader.get(this.tileset());
             ut.renderMap(ctx, this.tiles(), tileset, this.width, this.height);
-        }
+        },
+
+        toJSON: ut.buildToJSON([
+            'id',
+            'tileset',
+            'tiles',
+            'terrain',
+            'exits',
+            'entities',
+            'doors',
+            'width',
+            'height'
+        ])
     });
 
     return Map;

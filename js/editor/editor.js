@@ -64,14 +64,17 @@ define(function(require) {
         this.addEntityClass = function() {
             var entity_classes = self.entity_classes(),
                 id = 'new_entity',
-                k = 1;
-            while (id in entity_classes) {
-                id = 'new_entity' + k;
-                k++;
-            }
+                match = false,
+                k = 0;
+            do {
+                id = 'new_entity' + (++k);
+                match = _.find(entity_classes, function(ecls) {
+                    return ecls.id() === id;
+                });
+            } while (match !== undefined);
 
-            var ecls = new EntityClass(id);
-            self.entity_classes.set(id, ecls);
+            var ecls = new EntityClass({id: id});
+            self.entity_classes.push(ecls);
             self.editEntityClass(ecls);
         };
 
@@ -94,21 +97,26 @@ define(function(require) {
             ko.applyBindings(view_model, $workspace.get(0));
         };
 
+        var maxDepth = 10;
+        this.serialize = function(data) {
+            return JSON.stringify(data, function(key, value) {
+                // Loop because an observable's value might in turn be
+                // another observable wrapper
+                for (var k = 0; ko.isObservable(value) && (k < maxDepth); k++)
+                    value = value();
+                return value;
+            });
+        };
+
         this.save = function() {
             var data = {
                 player: self.player,
                 maps: self.maps,
-                entity_classes: {}
+                entity_classes: self.entity_classes
             };
 
-            // Serialize entities seperately due to issues with
-            // icon attribute.
-            _.each(self.entity_classes(), function(entity, id) {
-                data.entity_classes[id] = entity.toJS();
-            });
-
             // TODO: Make this better
-            alert(ko.toJSON(data));
+            alert(self.serialize(data));
         };
     }
 

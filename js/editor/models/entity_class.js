@@ -39,17 +39,14 @@ define(function(require) {
     }
 
     _.extend(EntityClass.prototype, {
-        // Convert entity to a plain object. Avoids elements that cause errors
-        // or are unneeded, like `icon`.
-        toJS: function() {
-            return {
-                tileset_id: this.tileset_id,
-                sprite_id: this.sprite_id,
-                bounding_box: this.bounding_box,
-                sprites: this.sprites,
-                handlers: this.handlers
-            };
-        }
+        toJSON: ut.buildToJSON([
+            'id',
+            'tileset_id',
+            'sprite_id',
+            'bounding_box',
+            'sprites',
+            'handlers'
+        ])
     });
 
     return EntityClass;

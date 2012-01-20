@@ -1,7 +1,7 @@
 define(function(require) {
     var _ = require('underscore'),
         $ = require('jquery');
-    
+
     return {
         LEFT: 4, WEST: 4,
         RIGHT: 1, EAST: 1,
@@ -108,6 +108,19 @@ define(function(require) {
                 tx = Math.floor(x / tw),
                 ty = Math.floor(y / th);
             return {tx: tx, ty: ty};
+        },
+
+        // Create a toJSON function for serialization that only returns
+        // the specified properties.
+        buildToJSON: function(attrs) {
+            return function() {
+                var self = this, obj = {};
+                _.each(attrs, function(key) {
+                    obj[key] = self[key];
+                });
+
+                return obj;
+            };
         }
     };
 });
